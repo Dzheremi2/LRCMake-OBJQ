@@ -1,0 +1,25 @@
+{
+  "name": "objectiveq",
+  "displayName": "ObjectiveQ",
+  "description": "Syntax highlighter for ObjectiveQ",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "objectiveq",
+      "aliases": ["ObjectiveQ", "objectiveq"],
+      "extensions": [".objq"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "objectiveq",
+      "scopeName": "source.objq",
+      "path": "./syntaxes/objectiveq.tmLanguage.json"
+    }]
+  }
+}

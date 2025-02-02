@@ -1,0 +1,77 @@
+# use selfpkg from system.registry as pkg://
+# use selflocal from system.registry as local:/
+# use selfvar from system.registry as pkgvars
+# use sysLTS from system as LTS
+# use override.cfg from local:/
+# use sys from system as sys
+# use self from system.registry as self
+# use selfpermission from system.registry as perm
+# use platform from system.registry
+# define override.cfg as pkgvars; aliased as "@"
+
+app:
+  name:
+    text: "LRCMake"
+    translate: false
+  description:
+    text: "Sync lyrics of your loved songs"
+    translate: true
+  developer:
+    text: Dzheremi
+    translate: false
+  exec-name: pkg://lrcmake.app
+  configdir: pkg://config
+  icon: "@app-icon"
+  is-terminal: false
+
+reqv:
+  internal:
+    - name: QOS
+      ver: LTS
+      source: sys
+    - name: QTK
+      ver: LTS
+      source: sys
+  external:
+    - name: libmimes
+      ver: ">=1.0"
+      source: appx
+    - name: audio_metadata
+      ver: ">=4.2"
+      source: appx
+    - name: paths
+      ver: ">=1.0"
+      source: appx
+    - name: literals
+      ver: ">=2.2.1"
+      source: appx
+    - name: python_f_strings
+      ver: v1.0
+      source: https://derives.dev/Millernose/python_f_strings/blob/release/#ver/install.qscr
+    - name: tmpdirs
+      ver: ">=2.2"
+      source: appx
+
+exec:
+  entrypoint: local:/src/lrcmake.objq/Main
+  passthrough: [define, sys, self.use]
+
+permissons:
+  - perm.filesystem
+  - perm.internet
+  - perm.background
+
+build:
+  compiler: objqcomp
+  user-compile: false
+  buildfile: local:/LRCMake.objqcomp
+
+structure:
+  data: local:/data
+  config: local:/config
+  source: local:/src
+
+platform:
+  pc: true
+  mobile: false
+  pointer: false

@@ -1,0 +1,107 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "Objective-Q",
+    "scopeName": "source.objq",
+    "fileTypes": [
+        "objq"
+    ],
+    "patterns": [
+        {
+            "name": "comment.line.number-sign.objq",
+            "match": "# .*",
+            "captures": {
+                "0": { "name": "punctuation.definition.comment.objq" }
+            }
+        },
+        {
+            "name": "comment.block.objq",
+            "begin": "## ",
+            "end": " ##"
+        },
+        {
+            "name": "keyword.control.objq",
+            "match": "\\b(define|import|from|export|override)\\b",
+            "fontStyle": "italic"
+        },
+        {
+            "name": "keyword.other.objq",
+            "match": "\\b(:append|for|while|in|return|:replace)\\b"
+        },
+        {
+            "name": "support.function.magic.python",
+            "match": "\\b(:INIT:|@\\w+)\\b"
+        },
+        {
+            "name": "constant.language.python-none.objq",
+            "match": "\\b(null|true|false)\\b"
+        },
+        {
+            "name": "constant.language.python-none.objq",
+            "match": "\\blocal:/\\b"
+        },
+        {
+            "name": "entity.name.class.objq",
+            "match": "\\bc\\w+\\b(?=\\()"
+        },
+        {
+            "name": "entity.name.type.objq",
+            "match": "\\bt\\w+\\b(?=\\()"
+        },
+        {
+            "name": "entity.name.type.objq",
+            "match": "(?<=\\b:\\s*)\\b\\w+\\b"
+        },
+        {
+            "name": "keyword.other.function-prefix.objq",
+            "match": "^\\s*\\b(f|pf)\\b(?=\\w+\\(\\):;\\s*\\{)",
+            "captures": {
+                "1": { "name": "keyword.other.function-prefix.objq"}
+            }
+        },
+        {
+            "name": "entity.name.function.objq",
+            "match": "(?<=\\b(f|pf)\\b)\\w+\\b(?=\\(\\):;\\s*\\{)"
+        },
+        {
+            "name": "constant.other.objq",
+            "match": "\\b[A-Z_]+\\b"
+        },
+        {
+            "name": "variable.language.self.objq",
+            "match": "\\bself\\b"
+        },
+        {
+            "name": "variable.other.readwrite.objq",
+            "match": "(?<=\\bself\\.)\\w+\\b"
+        },
+        {
+            "name": "keyword.other.prefix.objq",
+            "match": "\\bo\\b(?=\\()"
+        },
+        {
+            "name": "entity.name.function.objq",
+            "match": "\\b\\w+\\b(?=\\()",
+            "doesNotMatch": ".*;$"
+        },
+        {
+            "name": "variable.other.readwrite.objq",
+            "match": "\\b(?!(define|import|from|export|override|:append|for|while|in|return|:replace|null|@|self|f|pf))\\w+\\b(?<!\\.)(?!=)"
+        },
+        {
+            "name": "string.quoted.single.objq",
+            "begin": "'",
+            "end": "'",
+            "patterns": [
+                { "name": "constant.character.escape.objq", "match": "\\\\." }
+            ]
+        },
+        {
+            "name": "string.quoted.double.objq",
+            "begin": "\"",
+            "end": "\"",
+            "patterns": [
+                { "name": "constant.character.escape.objq", "match": "\\\\." }
+            ]
+        }
+    ]
+}

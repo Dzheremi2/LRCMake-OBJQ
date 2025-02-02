@@ -1,0 +1,9 @@
+STATELESS:
+  auto-file-manipulation: false
+  lyrics-file-format: .lrc
+
+STATEFULL:
+  win-width: 360
+  win-height: 100
+  maximized: false
+  opened-dir: null

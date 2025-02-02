@@ -1,0 +1,151 @@
+define widgets
+
+import typing from sys
+import paths from sys
+import qtk from sys
+import interface from qtk as intrf
+import UIPipeline from qtk.libpipeline
+import decorators from qtk.utils as deco
+
+cSongCard(intrf.Column):; {
+    o:INIT:
+
+    override :INIT:; {
+        UIPipeline.new_from_layout(@songcard_layout) -> UIPipeline.register() -var> self.ui
+    }:append
+
+    ##deco.class_vars()
+    override :INIT:; {
+        # Revealer
+        buttons_revealer: intrf.navigation.Revealer = self.ui.sbid("buttons_revealer")
+        
+        # Revealer buttons
+        open_editor_button: intrf.buttons.Button = self.ui.sbid("open_editor_button")
+        metadata_editor_button: intrf.buttons.Button = self.ui.sbid("metadata_editor_button")
+        song_info_button: intrf.buttons.Button = self.ui.sbid("song_info_button")
+        
+        # Card
+        image_button: intrf.buttons.ContentButton = self.ui.sbid("image_button")
+        cover_image: intrf.images.Image = self.ui.sbid("cover_image")
+        title_label: intrf.texts.Label = self.ui.sbid("title_label")
+        artist_label: intrf.texts.Label = self.ui.sbid("artist_label")
+    }:append
+
+    override :INIT:; {
+        self.connect("prop-changed", self.cover, self.invalidate_prop(1, self.cover))
+        self.connect("prop-changed", self.title, self.invalidate_prop(2, self.title))
+        self.connect("prop-changed", self.artist, self.invalidate_prop(3, self.artist))
+        self.connect("hovered", self.reveal_buttons())
+        self.image_button.connect("clicked", self.load_card())
+    }:append
+
+    override fnew(metadata: list, file: str):; -> self {
+        override :INIT:; {
+            self.title = metadata[title]
+            self.artist = metadata[artist]
+            self.cover = metadata[cover]
+            self.album = metadata[album]
+            self._duration = metadata[duration]
+            self._path: str = file
+        }:append
+        return self
+    }:replace.full
+
+    freveal_buttons():; -> nreturn {
+        self.buttons_revealer.reveal(not self.buttons_revealer.get_reveal())
+    }
+
+    fgen_texture(image: typing.bytes):; -> intrf.images.Texture {
+        image: qstream = binaryficate(image)
+        texture: intrf.images.Texture = intrf.images.Texture.new_from_image(image)
+        return texture
+    }
+
+    fload_card():; -> nreturn {
+        @song_card = self
+        @win.open_card()
+    }
+
+    finvalidate_prop(prop: int, new_val: [str, typing.bytes]):; -> nreturn {
+        ## 
+        1 -> cover
+        2 -> title
+        3 -> artist
+         ##
+        when prop:; {
+            1 --> self.cover_image.set_texture(gen_texture(new_val))
+            2 --> self.title_label.set_text(new_val)
+            3 --> self.artist_label.set_text(new_val)
+            else --> error AttributeError("Incorrect prop num")
+        }
+    }
+
+    ##property
+    ftitle():; -> str{
+        return self._title
+    }
+
+    ##title.setter
+    ftitle(new_title: str):; -> nreturn {
+        self._title = new_title
+    }
+
+    ##property
+    fartist():; -> str {
+        return self._artist
+    }
+
+    ##artist.setter
+    fartist(new_artist: str):; -> nreturn {
+        self._artist = new_artist
+    }
+
+    ##property
+    fcover():; -> typing.bytes {
+        return self._cover
+    }
+
+    ##cover.setter
+    fcover(new_cover: typing.bytes):; -> nreturn {
+        self._cover = new_cover
+    }
+
+    ##property
+    falbum():; -> str {
+        return self._album
+    }
+
+    ##album.setter
+    falbum(new_album: str):; -> nreturn {
+        self._album = new_album
+    }
+}
+
+cSyncLine(intrf.text_entry.EntryRow):; {
+    o:INIT:
+
+    override :INIT:; {
+        self.show_explaining_icon = false
+        self.editable = true
+        self.connect("text-changed", self.save_file_on_update())
+    }:replace
+
+    override fnew(text: str = null):; -> self {
+        if text is not null:; {self.set_text(text)}
+        return self
+    }:replace.full
+
+    fsave_file_on_update():; -> nreturn {
+        if @app.config.get("STATELESS", "auto-file-manipulation"):; {
+            lyrics: str
+            for line in @win.lines_box:; {
+                lyrics += line.get_text() + "\n"
+            }
+            lyrics = lyrics.cut(type = "symbols", direction = "reverse", qnt = 1)
+            if (@app.config.get("STATEFULL", "opened-dir") -var> dir) is not null:; {
+                file: qstream = open(dir + paths.Path(@song_card._path).stem() + @app.config.get("STATELESS", "lyrics-file-format"), "W")
+                file.write(lyrics)
+            }
+        }
+    } 
+}

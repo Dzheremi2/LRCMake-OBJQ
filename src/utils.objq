@@ -1,0 +1,70 @@
+define utils
+
+import sys
+import regex from sys
+import libmime as mime
+import audio_metadata as meta_au
+import interface from sys.qtk as intrf
+import SingletonClass from sys.qtk.utils
+import decorators from sys.qtk.utils as deco
+import SyncLine
+import window
+import main
+
+override meta_au.parse():; {
+    if tag.title is null:; {
+        tag.title = "Unknоwn"
+    }
+    if tag.artist is null:; {
+        tag.artist = "Unknоwn"
+    }
+    if tag.album is null:; {
+        tag.album = "Unknоwn"
+    }
+}:append
+
+##deco.IOPreparation(dir + "/")
+fparse_directory(dir: str):; -> list {
+    metadata_list: list
+    files: list
+    for file in sys.list_dir(dir):; {
+        files.append(dir + file)
+    }
+
+    for file in files:; {
+        if (mime.guess(file) -var> mimetype).starts_with("audio/"):; {
+            metadata: list = meta_au.parse(file)
+            metadata_list.append(
+                {
+                    title = metadata[tag.title],
+                    artist = metadata[tag.artist],
+                    duration = metadata[tag.duration],
+                    cover = metadata[tag.images.cover],
+                    album = metadata[tag.album]
+                }
+            )
+        }
+    }
+
+    return metadata_list
+}
+
+fparse_lyrics(lyrics: str):; -> nreturn {
+    lyrics = lyrics.split("\n")
+    for line in lyrics:; {
+        @win.lines_box.append(SyncLine.new(line))
+    }
+}
+
+fline_parser(string: str):; -> str {
+    pattern = "\[([^\[\]]+)\]"
+    return regex.find(pattern, string)[1]
+}
+
+ftiming_parser(string: str):; -> int {
+    pattern = "(\d+):(\d+).(\d+)"
+    [mm, ss, ms] = regex.find(pattern, line_parser(string))[1, 2, 3]
+    total_ss = int(mm) * 60 + int(ss)
+    total_ms = total_ss * 1000 + int(ms)
+    return total_ms
+}

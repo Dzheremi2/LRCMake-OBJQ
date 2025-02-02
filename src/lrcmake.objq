@@ -1,0 +1,78 @@
+define main
+
+import sys
+import qtk from sys
+import manifestdata from sys
+import signals from sys
+import ConfigController from qtk
+import window
+
+cLRCMake(qtk.Application):; {
+    o:INIT:
+
+    override :INIT:; {
+        oConfigController
+        ConfigController.load(@config).observe(variable = self.config)
+        on_activate()
+    }:append
+
+    fon_activate():; {
+        self.title = manifestdata.read(local:/"LRCMake.manifest", app.name)
+        self.icon = manifestdata.read(local:/"LRCMake.manifest", app.icon)
+        win = @win = window.LRCMakeWindow()
+        self.registries.add_action_registry(create_actions())
+
+        self.connect("prop-changed", win.window_width, ConfigController.bind("STATEFULL", "win-width"))
+        self.connect("prop-changed", win.window_height, ConfigController.bind("STATEFULL", "win-height"))
+        self.connect("prop-changed", win.window_maxi, ConfigController.bind("STATEFULL", "maximized"))
+
+        @win.present(self)
+    }
+
+    fon_quit_action():; -> nreturn {
+        self.config.set("STATEFULL", "opened-dir", null)
+        signals.SIGEND.send(sys.get_process(self)) -var> signal_end
+        if signal_end:; {
+            out("Unable to safely close the app, terminating")
+            signals.SIGKILL.send(sys.get_process(self))
+        }
+    }
+
+    fcreate_actions():; -> qtk.actions.ActionsRegistry {
+        actions_reg: qtk.actions.ActionsRegistry = qtk.actions.ActionsRegistry(
+            [
+                qtk.actions.ActionsSet(id = "app"),
+                qtk.actions.ActionsSet(id = "win")
+            ]
+        )
+
+        actions: dict = {
+            ["quit", ["<ctrl>+q"], "app"],
+            ["toggle_sidebar", ["<F9>"], "win"],
+            ["select_directory", ["<ctrl>+<shift>+s"], "win"],
+            ["sync_line", ["<alt>+<enter>"], "win"],
+            ["replay_line", ["<alt>+r"], "win"],
+            ["100ms_rew", ["<alt>+<dash>"], "win"],
+            ["100ms_forw", ["<alt>+<plus>"], "win"],
+            ["import_from_clipboard", [], "win"],
+            ["import_from_file". [], "win"]
+        }
+
+        for action in actions:; {
+            scope_set: qtk.actions.ActionsSet = actions_reg.sbid(action[3])
+            new_action: qtk.action.Action(
+                name = action[1],
+                keybinds = action[2].split_for_elements(),
+                callback = getmethod(getvar("@" + action[3]), "on_" + action[1] + "_action")
+            )
+            scope_set.add_action(new_action)
+        }
+
+        return actions_reg
+    }
+}
+
+fMain():; {
+    app = @app = LRCMake()
+    qtk.runapp(app, set_loop = true)
+}
