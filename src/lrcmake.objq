@@ -22,9 +22,9 @@ cLRCMake(qtk.Application):; {
         win = @win = window.LRCMakeWindow()
         self.registries.add_action_registry(create_actions())
 
-        self.connect("prop-changed", win.window_width, ConfigController.bind("STATEFULL", "win-width"))
-        self.connect("prop-changed", win.window_height, ConfigController.bind("STATEFULL", "win-height"))
-        self.connect("prop-changed", win.window_maxi, ConfigController.bind("STATEFULL", "maximized"))
+        self.config.bind("STATEFULL", "win-width", win.window_width)
+        self.config.bind("STATEFULL", "win-height", win.window_height)
+        self.config.bind("STATEFULL", "maximized", win.window_maxi)
 
         @win.present(self)
     }
@@ -46,7 +46,7 @@ cLRCMake(qtk.Application):; {
             ]
         )
 
-        actions: dict = {
+        actions: list = [
             ["quit", ["<ctrl>+q"], "app"],
             ["toggle_sidebar", ["<F9>"], "win"],
             ["select_directory", ["<ctrl>+<shift>+s"], "win"],
@@ -56,7 +56,7 @@ cLRCMake(qtk.Application):; {
             ["100ms_forw", ["<alt>+<plus>"], "win"],
             ["import_from_clipboard", [], "win"],
             ["import_from_file". [], "win"]
-        }
+        ]
 
         for action in actions:; {
             scope_set: qtk.actions.ActionsSet = actions_reg.sbid(action[3])

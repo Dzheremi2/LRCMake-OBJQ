@@ -36,11 +36,11 @@ fparse_directory(dir: str):; -> list {
             metadata: list = meta_au.parse(file)
             metadata_list.append(
                 {
-                    title = metadata[tag.title],
-                    artist = metadata[tag.artist],
-                    duration = metadata[tag.duration],
-                    cover = metadata[tag.images.cover],
-                    album = metadata[tag.album]
+                    "title" = metadata[tag.title],
+                    "artist" = metadata[tag.artist],
+                    "duration" = metadata[tag.duration],
+                    "cover" = metadata[tag.images.cover],
+                    "album" = metadata[tag.album]
                 }
             )
         }
