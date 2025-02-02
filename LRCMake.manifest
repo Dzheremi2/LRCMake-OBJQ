@@ -1,13 +1,31 @@
-# use selfpkg from system.registry as pkg://
-# use selflocal from system.registry as local:/
-# use selfvar from system.registry as pkgvars
-# use sysLTS from system as LTS
-# use override.cfg from local:/
-# use sys from system as sys
-# use self from system.registry as self
-# use selfpermission from system.registry as perm
-# use platform from system.registry
-# define override.cfg as pkgvars; aliased as "@"
+use:
+  manifest:
+    - name: app
+    - name: reqv
+    - name: exec
+    - name: permissons
+    - name: build
+    - name: structure
+    - name: platform
+  system.registry:
+    - name: pkg
+      alias: pkg://
+    - name: local
+      alias: local:/
+    - name: var
+      alias: pkgvars
+    - name: self
+    - name: permission
+      alias: perm
+  system:
+    - name: sys
+    - name: LTS
+  selflocal:
+    - name: override.cfg
+
+define:
+  - entry: define override.cfg as pkgvars
+    alias: "@"
 
 app:
   name:
@@ -21,6 +39,7 @@ app:
     translate: false
   exec-name: pkg://lrcmake.app
   configdir: pkg://config
+  datadir: pkg://data
   icon: "@app-icon"
   is-terminal: false
 
@@ -54,7 +73,7 @@ reqv:
 
 exec:
   entrypoint: local:/src/lrcmake.objq/Main
-  passthrough: [define, sys, self.use]
+  passthrough: [define, self.use, self.reqv]
 
 permissons:
   - perm.filesystem

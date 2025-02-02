@@ -1,7 +1,8 @@
 {
     "files.associations": {
         "*.manifest": "yaml",
-        "*.objqcomp": "yaml"
+        "*.objqcomp": "yaml",
+        "*.reg": "properties"
     },
     "material-icon-theme.files.associations": {
         "*.objq": "objectiveq"

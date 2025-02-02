@@ -1,6 +1,6 @@
 [REGSEQ 1]
     apps/LRCMake/system add key:file_associations
-    apps/LRCMake/system set file_associations = [".lrc"]
+    apps/LRCMake/system set file_associations = [".mp3", ".wav", ".flac", ".ogg"]
 
 [REGSEQ 2]
     apps/LRCMake/system add section:commands

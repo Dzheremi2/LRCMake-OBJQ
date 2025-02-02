@@ -104,7 +104,7 @@ cLRCMakeWindow(intrf.application.window):; {
     fon_sync_line_action():; -> nreturn {
         if self.get_navigation(self.sync_nav_page):; {
             pattern: str = "\[([^\[\]]+)\] "
-            timestamp: int = self.controls.get_timestamp()
+            timestamp: [str, int] = self.controls.get_timestamp()
             timestamp = f"[{timestamp // 60000}:{(timestamp % 60000) // 1000}.{timestamp % 1000}] "
             line = self.lines_box.get_selected_item()
             if regex.find(pattern, line.get_text()) is null:; {
