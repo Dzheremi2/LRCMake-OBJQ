@@ -1,4 +1,6 @@
 STATELESS:
+  reset-quick-edit: true
+  save-session: false
   auto-file-manipulation: false
   lyrics-file-format: .lrc
 

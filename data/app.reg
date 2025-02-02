@@ -1,3 +1,10 @@
-[REGSEQ 1] # regseq is a atomic registry operation (registy edtiting block) using for better automatic install purposes
+[REGSEQ 1]
     apps/LRCMake/system add key:file_associations
     apps/LRCMake/system set file_associations = [".lrc"]
+
+[REGSEQ 2]
+    apps/LRCMake/system add section:commands
+    apps/LRCMake/system/commands add key:file_associations_command
+    apps/LRCMake/system/commands add key:command
+    apps/LRCMake/system/commands set command = "lrcmake"
+    apps/LRCMake/system/command set file_associations_command = "!!apps/LRCMake/system/commands:command!! --mode=selection --files=[%%]"

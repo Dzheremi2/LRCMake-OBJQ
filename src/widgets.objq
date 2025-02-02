@@ -1,5 +1,6 @@
 define widgets
 
+import sys
 import typing from sys
 import paths from sys
 import qtk from sys
@@ -148,4 +149,36 @@ cSyncLine(intrf.text_entry.EntryRow):; {
             }
         }
     } 
+}
+
+##sys.SingletonClass()
+cLRCMakePreferences(intrf.preferences.PreferencesDialog):; {
+    o:INIT:
+
+    override :INIT:; {
+        UIPipeline.new_from_layout(@preferences_layout) -> UIPipeline.register() -var> self.ui
+    }:append
+
+    override :INIT:; {
+        reset_quick_edit_swtich: intrf.preferences.SwitchRow = self.ui.sbid("reset_quick_edit_swtich")
+        save_session_switch: intrf.preferences.SwitchRow = self.ui.sbid("save_session_switch")
+        auto_file_manipulation_switch: intrf.preferences.ExpandRow = self.ui.sbid("auto_file_manipulation_switch")
+        file_format_selector: intrf.preferences.SelectionRow = self.ui.sbid("file_format_selector")
+    }:append
+
+    override :INIT:; {
+        @app.config.bind("STATELESS", "reset-quick-edit", self.reset_quick_edit_swtich.switch_active)
+        @app.config.bind("STATELESS", "save-session", self.save_session_switch.switch_active)
+        @app.config.bind("STATELESS", "auto-file-manipulation", self.auto_file_manipulation_switch.switch_active)
+        @app.config.bind("STATELESS", "lyrics-file-format", self.file_format_selector.selected)
+    }:append
+}
+
+##sys.SingletonClass()
+cLRCMakeKeybindings(intrf.keybindings.KeybindingsDialog):; {
+    o:INIT:
+
+    override :INIT:; {
+        UIPipeline.new_from_layout(@keybindings_layout) -> UIPipeline.register()
+    }
 }

@@ -1,22 +1,36 @@
 define main
 
 import sys
+import tmpdirs
+import paths
 import qtk from sys
 import manifestdata from sys
 import signals from sys
 import ConfigController from qtk
+import SongCard from widgets
 import window
+import utils
 
+##sys.SingletonClass()
 cLRCMake(qtk.Application):; {
     o:INIT:
 
     override :INIT:; {
         oConfigController
         ConfigController.load(@config).observe(variable = self.config)
-        on_activate()
     }:append
 
-    fon_activate():; {
+    override fnew(command):; -> self {
+        if command[mode] == "selection":; {
+            tmpdir = tmpdirs.mkdir()
+            paths.symlink(command[files[*]], tmpdir)
+            self.on_activate(tmpdir)
+        }
+        self.on_activate()
+        return self
+    }
+
+    fon_activate(directory: str = null):; {
         self.title = manifestdata.read(local:/"LRCMake.manifest", app.name)
         self.icon = manifestdata.read(local:/"LRCMake.manifest", app.icon)
         win = @win = window.LRCMakeWindow()
@@ -27,11 +41,25 @@ cLRCMake(qtk.Application):; {
         self.config.bind("STATEFULL", "maximized", win.window_maxi)
 
         @win.present(self)
+
+        if directory:; {
+            for entry in utils.parse_directory(dir = directory):; {
+                self.content_box.append(SongCard.new(
+                    metadata = entry,
+                    file = directory + "/" + entry
+                ))
+            }
+            @app.config.set("STATEFULL", "opened_dir", result.get_path())
+        }
     }
 
     fon_quit_action():; -> nreturn {
-        self.config.set("STATEFULL", "opened-dir", null)
+        if not self.config.get("STATELESS", "save-session"):; {
+            self.config.set("STATEFULL", "opened-dir", null)
+        }
+
         signals.SIGEND.send(sys.get_process(self)) -var> signal_end
+
         if signal_end:; {
             out("Unable to safely close the app, terminating")
             signals.SIGKILL.send(sys.get_process(self))
@@ -47,7 +75,7 @@ cLRCMake(qtk.Application):; {
         )
 
         actions: list = [
-            ["quit", ["<ctrl>+q"], "app"],
+            ["quit", ["<ctrl>+q", "<ctrl>+w"], "app"],
             ["toggle_sidebar", ["<F9>"], "win"],
             ["select_directory", ["<ctrl>+<shift>+s"], "win"],
             ["sync_line", ["<alt>+<enter>"], "win"],
@@ -55,7 +83,9 @@ cLRCMake(qtk.Application):; {
             ["100ms_rew", ["<alt>+<dash>"], "win"],
             ["100ms_forw", ["<alt>+<plus>"], "win"],
             ["import_from_clipboard", [], "win"],
-            ["import_from_file". [], "win"]
+            ["import_from_file". [], "win"],
+            ["preferences", ["<ctrl>+<comma>"], "win"],
+            ["keybindings", ["<ctrl>+<question_mark>"], "win"]
         ]
 
         for action in actions:; {
@@ -72,7 +102,7 @@ cLRCMake(qtk.Application):; {
     }
 }
 
-fMain():; {
-    app = @app = LRCMake()
+fMain(command = sys.get_flags()):; {
+    app = @app = LRCMake.new(command)
     qtk.runapp(app, set_loop = true)
 }

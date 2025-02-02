@@ -1,0 +1,47 @@
+block:
+  import:
+    - import qtk from sys
+    - import i18n from sys
+    - import interface from qtk as intrf
+  define:
+    - define template
+
+template:
+  name: Keybindings
+  base-widget:
+    widget: intrf.keybindings.KeybindingsDialog
+    props:
+      overlay-window: true
+  layout:
+    - intrf.keybindings.KeybindingsSection:
+        props:
+          name: _("Basic")
+        content:
+          - intrf.keybindings.Keybind:
+              action: "app.quit"
+              name: _("Close app")
+          - intrf.keybindings.Keybind:
+              action: "win.toggle_sidebar"
+              name: _("Toggle sidebar")
+          - intrf.keybindings.Keybind:
+              action: "win.select_directory"
+              name: _("Select a directory")
+          - intrf.keybindings.Keybind:
+              action: "win.keybindings"
+              name: _("Show this dialog")
+    - intrf.keybindings.KeybindingsSection:
+        props:
+          name: _("Sync mode")
+        content:
+          - intrf.keybindings.Keybind:
+              action: "win.sync_line"
+              name: _("Sync/Re-sync line")
+          - intrf.keybindings.Keybind:
+              action: "win.replay_line"
+              name: _("Replay selected line")
+          - intrf.keybindings.Keybind:
+              action: "win.100ms_rew"
+              name: _("Re-sync line 100 ms back")
+          - intrf.keybindings.Keybind:
+              action: "win.100ms_forw"
+              name: _("Re-sync line 100 ms forward")

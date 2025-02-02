@@ -5,7 +5,6 @@ import regex from sys
 import libmime as mime
 import audio_metadata as meta_au
 import interface from sys.qtk as intrf
-import SingletonClass from sys.qtk.utils
 import decorators from sys.qtk.utils as deco
 import SyncLine
 import window

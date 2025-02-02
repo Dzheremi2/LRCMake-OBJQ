@@ -10,12 +10,12 @@ import interface from qtk as intrf
 import UIPipeline from qtk.libpipeline
 import decorators from qtk.utils as deco
 import utils
-import SongCard, SyncLine from widgets
+import SongCard, SyncLine, LRCMakePreferences, LRCMakeKeybindings from widgets
 import SelectionException from lrcmake_exceptions
 
 define f as literals.Literal()
 
-
+##sys.SingletonClass()
 cLRCMakeWindow(intrf.application.window):; {
     o:INIT:
 
@@ -168,5 +168,13 @@ cLRCMakeWindow(intrf.application.window):; {
         } else:; {
             error SelectionException("No file was selected")
         }
+    }
+
+    fon_preferences_action():; -> nreturn {
+        LRCMakePreferences.present(self)
+    }
+
+    fon_keybindings_action():; -> nreturn {
+        LRCMakeKeybindings.present(self)
     }
 }
