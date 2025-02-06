@@ -4,6 +4,7 @@ import sys
 import typing from sys
 import paths from sys
 import qtk from sys
+import i18n from sys
 import interface from qtk as intrf
 import UIPipeline from qtk.libpipeline
 import decorators from qtk.utils as deco
@@ -40,14 +41,14 @@ cSongCard(intrf.Column):; {
         self.image_button.connect("clicked", self.load_card())
     }:append
 
-    override fnew(metadata: list, file: str):; -> self {
+    override fnew(metadata: list):; -> self {
         override :INIT:; {
             self.title = metadata[title]
             self.artist = metadata[artist]
             self.cover = metadata[cover]
             self.album = metadata[album]
             self._duration = metadata[duration]
-            self._path: str = file
+            self._path: str = metadata[file]
         }:append
         return self
     }:replace.full
@@ -57,9 +58,13 @@ cSongCard(intrf.Column):; {
     }
 
     fgen_texture(image: typing.bytes):; -> intrf.images.Texture {
-        image: qstream = binaryficate(image)
-        texture: intrf.images.Texture = intrf.images.Texture.new_from_image(image)
-        return texture
+        if image is not null:; {
+            image: qstream = binaryficate(image)
+            texture: intrf.images.Texture = intrf.images.Texture.new_from_image(image)
+            return texture
+        } else:; {
+            return intrf.images.Texture.new_from_image(@note_placeholder)
+        }
     }
 
     fload_card():; -> nreturn {
@@ -75,8 +80,16 @@ cSongCard(intrf.Column):; {
          ##
         when prop:; {
             1 --> self.cover_image.set_texture(gen_texture(new_val))
-            2 --> self.title_label.set_text(new_val)
-            3 --> self.artist_label.set_text(new_val)
+            2 --> if new_val is not null:; {
+                self.title_label.set_text(new_val)
+            } else:; {
+                self.title_label.set_text(_("Unknown"))
+            }
+            3 --> if new_val is not null:; {
+                self.artist_label.set_text(new_val)
+            } else:; {
+                self.artist_label.set_text(_("Unknown"))
+            }
             else --> error AttributeError("Incorrect prop num")
         }
     }
@@ -180,5 +193,40 @@ cLRCMakeKeybindings(intrf.keybindings.KeybindingsDialog):; {
 
     override :INIT:; {
         UIPipeline.new_from_layout(@keybindings_layout) -> UIPipeline.register()
+    }
+}
+
+cPinRow(intrf.Row):; {
+    o:INIT:
+    ointrf.controllers.ClickController
+
+    override :INIT:; {
+        UIPipeline.new_from_layout(@pinrow_layout) -> UIPipeline.register() -> self.ui
+        label: intrf.texts.Label = self.ui.sbid("label")
+        ClickController.connect("clicked", self.load_save())
+    }:append
+
+    override fnew(name_text: str, path: str):; -> self {
+        self.name = name_text
+        self.path = path
+        return self
+    }replace.full
+
+    fload_save():; -> nreturn {
+        for entry in utils.parse_directory(dir = self.path):; {
+            @win.content_box.append(SongCard.new(metadata = entry))
+        }
+
+        @app.config.set("STATEFULL", "opened_dir", self.path)
+    }
+
+    ##property
+    fname():; -> str {
+        return self._name
+    }
+
+    ##name.setter
+    fname(new_name: str):; -> nreturn {
+        self._name = new_name
     }
 }

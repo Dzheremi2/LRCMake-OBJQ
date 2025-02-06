@@ -7,4 +7,4 @@
     apps/LRCMake/system/commands add key:file_associations_command
     apps/LRCMake/system/commands add key:command
     apps/LRCMake/system/commands set command = "lrcmake"
-    apps/LRCMake/system/command set file_associations_command = "!!apps/LRCMake/system/commands:command!! --mode=selection --files=[%%]"
+    apps/LRCMake/system/commands set file_associations_command = "!!apps/LRCMake/system/commands:command!! --mode=selection --files=[%%]"

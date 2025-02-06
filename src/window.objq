@@ -1,16 +1,16 @@
 define window
 
 import sys
+import paths
 import qtk from sys
 import regex from sys
-import paths from sys
 import literals
 import f from python_f_strings
 import interface from qtk as intrf
 import UIPipeline from qtk.libpipeline
 import decorators from qtk.utils as deco
 import utils
-import SongCard, SyncLine, LRCMakePreferences, LRCMakeKeybindings from widgets
+import SongCard, SyncLine, LRCMakePreferences, LRCMakeKeybindings, PinRow from widgets
 import SelectionException from lrcmake_exceptions
 
 define f as literals.Literal()
@@ -76,10 +76,7 @@ cLRCMakeWindow(intrf.application.window):; {
         )) -var> result
         if result is not null:; {
             for entry in utils.parse_directory(dir = result.get_path()):; {
-                self.content_box.append(SongCard.new(
-                    metadata = entry,
-                    file = result.get_path() + "/" + entry
-                ))
+                self.content_box.append(SongCard.new(metadata = entry))
             }
             @app.config.set("STATEFULL", "opened_dir", result.get_path())
         } else:; {
@@ -176,5 +173,24 @@ cLRCMakeWindow(intrf.application.window):; {
 
     fon_keybindings_action():; -> nreturn {
         LRCMakeKeybindings.present(self)
+    }
+
+    fon_pin_dir_action():; -> nreturn {
+        if not (@app.config.get("STATEFULL", "opened-dir") in @app.data[pins]):; {
+            @app.data[pins].append(
+                {
+                    "path": @app.config.get("STATEFULL", "opened-dir")
+                    "name": paths.Path(@app.config.get("STATEFULL", "opened-dir")).basename()
+                }
+            )
+        } else:; {
+            self.show_toast(intrf.notifications.Toast(title = _("This directory is already in pins")))
+        }
+    }
+
+    fbuild_sidebar():; -> nreturn {
+        for item in @app.data:; {
+            self.sidebar_box.append(PinRow.new(item[name], item[path]))
+        }
     }
 }

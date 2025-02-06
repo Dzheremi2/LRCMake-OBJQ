@@ -41,6 +41,9 @@ layout:
                   text: "LRCMake"
           intrf.positions.end:
             items:
+              - intrf.buttons.Button:
+                  icon: ico.PIN
+                  action: "win.pin_dir"
               - intrf.buttons.MenuButton:
                   id: "sorting_method"
                   icom: ico.SORTING_DOWNWARDS_ALPHABETICALLY

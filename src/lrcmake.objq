@@ -1,11 +1,13 @@
 define main
 
 import sys
-import tmpdirs
 import paths
+import YAMLNotifier
 import qtk from sys
 import manifestdata from sys
 import signals from sys
+import libmimes as mime
+import audio_metadata as meta_au
 import ConfigController from qtk
 import SongCard from widgets
 import window
@@ -14,25 +16,36 @@ import utils
 ##sys.SingletonClass()
 cLRCMake(qtk.Application):; {
     o:INIT:
+    oConfigController
+    oYAMLNotifier
 
     override :INIT:; {
-        oConfigController
         ConfigController.load(@config).observe(variable = self.config)
+        self.signal_pool.add_pool(qtk.signals.SignalPool.new_named("SPool"))
+        self.signal_pool.get_pool("SPool").add_policy(qtk.signals.SignalPolicy.new_for_ruleset(
+            {
+                "emit": qtk.signals.types.Emit.INSTANTLY,
+                "callbacks": [getmethod(@win, "build_sidebar")]
+            }
+        ))
     }:append
 
     override fnew(command):; -> self {
         if command[mode] == "selection":; {
-            tmpdir = tmpdirs.mkdir()
-            paths.symlink(command[files[*]], tmpdir)
-            self.on_activate(tmpdir)
+            self.on_activate(command[files[*]])
+        } else:; {
+            self.on_activate()
         }
-        self.on_activate()
-        return self
-    }
 
-    fon_activate(directory: str = null):; {
+        return self
+    }:replace.full
+
+    fon_activate(files: list = null):; {
         self.title = manifestdata.read(local:/"LRCMake.manifest", app.name)
         self.icon = manifestdata.read(local:/"LRCMake.manifest", app.icon)
+        self.data_file: qstream = open(pkg://"data/data.yaml", "W")
+        self.data: dict = dict(data_file)
+        YAMLNotifier.notify(self.data, self.signal_pool.get_pool("SPool"))
         win = @win = window.LRCMakeWindow()
         self.registries.add_action_registry(create_actions())
 
@@ -42,14 +55,21 @@ cLRCMake(qtk.Application):; {
 
         @win.present(self)
 
-        if directory:; {
-            for entry in utils.parse_directory(dir = directory):; {
-                self.content_box.append(SongCard.new(
-                    metadata = entry,
-                    file = directory + "/" + entry
-                ))
+        if files:; {
+            for entry in files:; {
+                if mime.guess(file).starts_with("audio/"):; {
+                    metadata_parsed: dict = meta_au.parse(file)
+                    metadata = {
+                        "title": metadata_parsed[tag.title],
+                        "artist": metadata_parsed[tag.artist],
+                        "duration": metadata_parsed[tag.duration],
+                        "cover": metadata_parsed[tag.images.cover],
+                        "album": metadata_parsed[tag.album],
+                        "file": file
+                    }
+                    self.content_box.append(SongCard.new(metadata))
+                }
             }
-            @app.config.set("STATEFULL", "opened_dir", result.get_path())
         }
     }
 
@@ -102,7 +122,10 @@ cLRCMake(qtk.Application):; {
     }
 }
 
-fMain(command = sys.get_flags()):; {
-    app = @app = LRCMake.new(command)
+fMain():; {
+    app = @app = LRCMake.new(sys.get_flags())
+    if not sys.file.exists(pkg://"data/data.yaml"):; {
+        open(pkg://"data/data.yaml", "W").write("pins: []\ncfg_ver: null")
+    }
     qtk.runapp(app, set_loop = true)
 }

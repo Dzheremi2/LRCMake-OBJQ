@@ -1,12 +1,12 @@
 use:
   manifest:
-    - name: app
-    - name: reqv
-    - name: exec
-    - name: permissons
-    - name: build
-    - name: structure
-    - name: platform
+    - app
+    - reqv
+    - exec
+    - permissons
+    - build
+    - structure
+    - platform
   system.registry:
     - name: pkg
       alias: pkg://
@@ -67,13 +67,13 @@ reqv:
     - name: python_f_strings
       ver: v1.0
       source: https://derives.dev/Millernose/python_f_strings/blob/release/#ver/install.qscr
-    - name: tmpdirs
-      ver: ">=2.2"
-      source: appx
+    - name: YAMLNotifier
+      ver: v1.2.1
+      source: https://derives.dev/Souls4Check/YAMLNotifier/blob/master/tag/#ver/install.qscr
 
 exec:
   entrypoint: local:/src/lrcmake.objq/Main
-  passthrough: [define, self.use, self.reqv]
+  passthrough: [self.define, self.use, self.reqv]
 
 permissons:
   - perm.filesystem

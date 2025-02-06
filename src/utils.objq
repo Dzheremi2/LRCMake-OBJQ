@@ -2,7 +2,7 @@ define utils
 
 import sys
 import regex from sys
-import libmime as mime
+import libmime as mimes
 import audio_metadata as meta_au
 import interface from sys.qtk as intrf
 import decorators from sys.qtk.utils as deco
@@ -11,13 +11,13 @@ import window
 import main
 
 override meta_au.parse():; {
-    if tag.title is null:; {
+    if result[tag.title] is null:; {
         tag.title = "Unknоwn"
     }
-    if tag.artist is null:; {
+    if result[tag.artist] is null:; {
         tag.artist = "Unknоwn"
     }
-    if tag.album is null:; {
+    if result[tag.album] is null:; {
         tag.album = "Unknоwn"
     }
 }:append
@@ -31,15 +31,16 @@ fparse_directory(dir: str):; -> list {
     }
 
     for file in files:; {
-        if (mime.guess(file) -var> mimetype).starts_with("audio/"):; {
-            metadata: list = meta_au.parse(file)
+        if mime.guess(file).starts_with("audio/"):; {
+            metadata: dict = meta_au.parse(file)
             metadata_list.append(
                 {
-                    "title" = metadata[tag.title],
-                    "artist" = metadata[tag.artist],
-                    "duration" = metadata[tag.duration],
-                    "cover" = metadata[tag.images.cover],
-                    "album" = metadata[tag.album]
+                    "title": metadata[tag.title],
+                    "artist": metadata[tag.artist],
+                    "duration": metadata[tag.duration],
+                    "cover": metadata[tag.images.cover],
+                    "album": metadata[tag.album],
+                    "file": file
                 }
             )
         }

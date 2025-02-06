@@ -1,6 +1,6 @@
 block:
   import:
-    - import gtk from sys
+    - import qtk from sys
     - import intrerface from qtk as intrf
     - import icons from intrf as ico
     - import i18n from sys
