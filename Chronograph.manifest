@@ -1,0 +1,58 @@
+app:
+  name: _("Chronograph")
+  description: _("Sync lyrics of your loved songs ♪")
+  developers: 
+    - Dzheremi
+  version: 2.1
+  icon: R.Icons.app_icon
+  is-terminal: false
+  platform:
+    pc: true
+    mobile: true
+    pointer: true
+
+package:
+  pkg_name: chronograph
+  pkg_id: dev.derives.Dzheremi.Chronograph
+  exec: pkg:/chronograph
+  required-access-level: user
+  permissions:
+    - qtk.permissions.Internet
+    - qtk.permissions.Storage
+    - qtk.permissions.StorageExtended
+    - qtk.permissions.Background
+  env:
+    libs:
+      - sys
+
+appx:
+  name: _("Chronograph")
+  description: _("Sync lyrics of your loved songs ♪")
+  changelog: local:/docs/changelog.yaml
+  developers: 
+    - Dzheremi
+  platform:
+    pc: true
+    mobile: true
+    pointer: true
+  policies:
+    allow-comments: true
+    allow-rating: true
+    oars: oars-1.1
+    license: QOS-SOFT-FOSS-2.1
+  links:
+    source-code: https://derives.dev/Dzheremi/Chronograph
+    homepage: https://derives.dev/Dzheremi/Chronograph
+    issue-tracker: https://derives.dev/Dzheremi/Chronograph/issues
+    contributing: https://derives.dev/Dzheremi/Chronograph/mergerq
+    translate: https://derives.dev/Dzheremi/Chronograph/i18n
+    help: https://derives.dev/Dzheremi/Chronograph/forum
+  screenshots: 
+    - name: _("Main page")
+      screen: local:/docs/lib.png
+    - name: _("Sync page")
+      screen: local:/docs/sync.png
+    - name: _("LRClib import")
+      screen: local:/docs/lrclib.png
+    - name: _("Small sync page")
+      screen: local:/docs/syncC.png

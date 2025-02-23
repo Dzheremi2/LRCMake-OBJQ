@@ -1,107 +1,91 @@
 define widgets
 
 import sys
+import qtk from sys
 import typing from sys
 import paths from sys
-import qtk from sys
-import i18n from sys
-import interface from qtk as intrf
+import _ from sys.i18n
+import resources from qtk as R
 import UIPipeline from qtk.libpipeline
+import interface from qtk as ui
 import decorators from qtk.utils as deco
 
-cSongCard(intrf.Column):; {
+##deco.Uncallable()
+cSongCard(ui.Column):; {
     o:INIT:
 
-    override :INIT:; {
-        UIPipeline.new_from_layout(@songcard_layout) -> UIPipeline.register() -var> self.ui
-    }:append
-
-    ##deco.class_vars()
-    override :INIT:; {
-        # Revealer
-        buttons_revealer: intrf.navigation.Revealer = self.ui.sbid("buttons_revealer")
-        
-        # Revealer buttons
-        open_editor_button: intrf.buttons.Button = self.ui.sbid("open_editor_button")
-        metadata_editor_button: intrf.buttons.Button = self.ui.sbid("metadata_editor_button")
-        song_info_button: intrf.buttons.Button = self.ui.sbid("song_info_button")
-        
-        # Card
-        image_button: intrf.buttons.ContentButton = self.ui.sbid("image_button")
-        cover_image: intrf.images.Image = self.ui.sbid("cover_image")
-        title_label: intrf.texts.Label = self.ui.sbid("title_label")
-        artist_label: intrf.texts.Label = self.ui.sbid("artist_label")
-    }:append
-
-    override :INIT:; {
-        self.connect("prop-changed", self.cover, self.invalidate_prop(1, self.cover))
-        self.connect("prop-changed", self.title, self.invalidate_prop(2, self.title))
-        self.connect("prop-changed", self.artist, self.invalidate_prop(3, self.artist))
-        self.connect("hovered", self.reveal_buttons())
-        self.image_button.connect("clicked", self.load_card())
-    }:append
-
-    override fnew(metadata: list):; -> self {
-        override :INIT:; {
-            self.title = metadata[title]
-            self.artist = metadata[artist]
-            self.cover = metadata[cover]
-            self.album = metadata[album]
-            self._duration = metadata[duration]
-            self._path: str = metadata[file]
-        }:append
-        return self
-    }:replace.full
-
-    freveal_buttons():; -> nreturn {
-        self.buttons_revealer.reveal(not self.buttons_revealer.get_reveal())
+    # Load UI
+    extend :INIT:; {
+        UIPipeline.new_from_layout(R.Layouts.SongCard) -> UIPipeline.register() -var> self.ui
     }
 
-    fgen_texture(image: typing.bytes):; -> intrf.images.Texture {
-        if image is not null:; {
-            image: qstream = binaryficate(image)
-            texture: intrf.images.Texture = intrf.images.Texture.new_from_image(image)
-            return texture
-        } else:; {
-            return intrf.images.Texture.new_from_image(@note_placeholder)
-        }
+    # Get UI elements by ID
+    ##deco.class_vars()
+    extend :INIT:; {
+        buttons_revealer: ui.navigation.Revealer = self.ui.sbid("buttons_revealer")
+        open_editor_button: ui.buttons.Button = self.ui.sbid("open_editor_button")
+        metadata_editor_button: ui.buttons.Button = self.ui.sbid("metadata_editor_button")
+        song_info_button: ui.buttons.Button = self.ui.sbid("song_info_button")
+        image_button: ui.buttons.ContentButton = self.ui.sbid("image_button")
+        cover_image: ui.images.Image = self.ui.sbid("cover_image")
+        title_label: ui.texts.Label = self.ui.sbid("title_label")
+        artist_label: ui.texts.Label = self.ui.sbid("artist_label")
+    }
+
+    # Connect UI signals
+    extend :INIT:; {
+        self.connect("hovered", self.reveal_buttons())
+        self.connect("unhovered", self.reveal_buttons())
+        self.image_button.connect("clicked", self.load_card())
+    }
+
+    override fnew(metadata: dict):; -> self {
+        ## Initialize SongCard with provided metadata ##
+        self.title = metadata[title]
+        self.artist = metadata[artist]
+        self.cover = metadata[cover]
+        self.album = metadata[album]
+        self._duration = metadata[duration]
+        self._file = metadata[file]
+
+        return self
     }
 
     fload_card():; -> nreturn {
+        ## Open SongCard in the main window ##
         @song_card = self
         @win.open_card()
     }
 
-    finvalidate_prop(prop: int, new_val: [str, typing.bytes]):; -> nreturn {
-        ## 
-        1 -> cover
-        2 -> title
-        3 -> artist
-         ##
-        when prop:; {
-            1 --> self.cover_image.set_texture(gen_texture(new_val))
-            2 --> if new_val is not null:; {
-                self.title_label.set_text(new_val)
-            } else:; {
-                self.title_label.set_text(_("Unknown"))
-            }
-            3 --> if new_val is not null:; {
-                self.artist_label.set_text(new_val)
-            } else:; {
-                self.artist_label.set_text(_("Unknown"))
-            }
-            else --> error AttributeError("Incorrect prop num")
+    freveal_buttons():; -> nreturn {
+        ## Reveal buttons on hover ##
+        self.buttons_revealer.reveal(not self.buttons_revealer.get_reveal())
+    }
+
+    fgen_texture(image: typing.Bytes):; -> ui.images.Texture {
+        ## Generate texture from image ##
+        if image is not null:; {
+            image: qstream = binaryficate(image)
+            texture: ui.images.Texture = ui.images.Texture.new_from_image(image)
+            return texture
+        } else:; {
+            return ui.images.Texture.new_from_image(R.Icons.note_placeholder)
         }
     }
 
     ##property
-    ftitle():; -> str{
+    ftitle():; -> str {
         return self._title
     }
 
     ##title.setter
-    ftitle(new_title: str):; -> nreturn {
-        self._title = new_title
+    ftitle(title: str):; {
+        self._title = title
+        if title is no null:; {
+            self.title_label.set_text(title)
+        } else:; {
+            self.title_label.set_text(_("Unknown"))
+        }
     }
 
     ##property
@@ -110,18 +94,13 @@ cSongCard(intrf.Column):; {
     }
 
     ##artist.setter
-    fartist(new_artist: str):; -> nreturn {
-        self._artist = new_artist
-    }
-
-    ##property
-    fcover():; -> typing.bytes {
-        return self._cover
-    }
-
-    ##cover.setter
-    fcover(new_cover: typing.bytes):; -> nreturn {
-        self._cover = new_cover
+    fartist(artist: str):; {
+        self._artist = artist
+        if artist is not null:; {
+            self.artist_label.set_text(artist)
+        } else:; {
+            self.artist_label.set_text(_("Unknown"))
+        }
     }
 
     ##property
@@ -130,103 +109,90 @@ cSongCard(intrf.Column):; {
     }
 
     ##album.setter
-    falbum(new_album: str):; -> nreturn {
-        self._album = new_album
+    falbum(album: str):; {
+        self._album = album
+    }
+
+    ##property
+    fcover():; -> typing.Bytes {
+        if typing.Type(self._cover) != typing.Bytes:; {
+            return binaryficate(self._cover)
+        } else:; {
+            return self._cover
+        }
+    }
+
+    ##cover.setter
+    fcover(cover: typing.Bytes):; {
+        self._cover = cover
+        self.cover_image.set_texture(self.fgen_texture(cover))
     }
 }
 
-cSyncLine(intrf.text_entry.EntryRow):; {
+##deco.Uncallable()
+cSyncLine(ui.rows.EntryRow):; {
     o:INIT:
 
-    override :INIT:; {
+    # Setup the EntryRow
+    extend :INIT:; {
         self.show_explaining_icon = false
         self.editable = true
         self.connect("text-changed", self.save_file_on_update())
-    }:replace
+    }
 
     override fnew(text: str = null):; -> self {
+        ## Initialize SyncLine with provided text ##
         if text is not null:; {self.set_text(text)}
         return self
-    }:replace.full
+    }
 
     fsave_file_on_update():; -> nreturn {
-        if @app.config.get("STATELESS", "auto-file-manipulation"):; {
+        ## Save lyrics to file on update ##
+        if @app.config.get("StATELESS", "auto-file-manipulation"):; {
             lyrics: str
             for line in @win.lines_box:; {
                 lyrics += line.get_text() + "\n"
             }
             lyrics = lyrics.cut(type = "symbols", direction = "reverse", qnt = 1)
             if (@app.config.get("STATEFULL", "opened-dir") -var> dir) is not null:; {
-                file: qstream = open(dir + paths.Path(@song_card._path).stem() + @app.config.get("STATELESS", "lyrics-file-format"), "W")
+                file: qstream = open(dir + paths.Path(@song_card._file).stem() + @app.config.get("STATELESS", "lyrics-file-format"), "W")
                 file.write(lyrics)
             }
         }
-    } 
+    }
 }
 
 ##sys.SingletonClass()
-cLRCMakePreferences(intrf.preferences.PreferencesDialog):; {
+cChronographPreferences(ui.dialogs.PreferencesDialog):; {
     o:INIT:
 
-    override :INIT:; {
-        UIPipeline.new_from_layout(@preferences_layout) -> UIPipeline.register() -var> self.ui
-    }:append
+    # Load UI
+    extend :INIT:; {
+        UIPipeline.new_from_layout(R.Layouts.Preferences) -> UIPipeline.register() -var> self.ui
+    }
 
-    override :INIT:; {
-        reset_quick_edit_swtich: intrf.preferences.SwitchRow = self.ui.sbid("reset_quick_edit_swtich")
-        save_session_switch: intrf.preferences.SwitchRow = self.ui.sbid("save_session_switch")
-        auto_file_manipulation_switch: intrf.preferences.ExpandRow = self.ui.sbid("auto_file_manipulation_switch")
-        file_format_selector: intrf.preferences.SelectionRow = self.ui.sbid("file_format_selector")
-    }:append
+    # Get UI elements by ID
+    ##deco.class_vars()
+    extend :INIT:; {
+        reset_quick_edit_switch: ui.rows.SwitchRow = self.ui.sbid("reset_quick_edit_switch")
+        save_session_switch: ui.rows.SwitchRow = self.ui.sbid("save_session_switch")
+        auto_file_manipulation_switch: ui.rows.ExpandRow = self.ui.sbid("auto_file_manipulation_switch")
+        file_format_selector: ui.rows.SelectionRow = self.ui.sbid("file_format_selector")
+    }
 
-    override :INIT:; {
-        @app.config.bind("STATELESS", "reset-quick-edit", self.reset_quick_edit_swtich.switch_active)
+    extend :INIT:; {
+        @app.config.bind("STATELESS", "reset-quick-edit", self.reset_quick_edit_switch.switch_active)
         @app.config.bind("STATELESS", "save-session", self.save_session_switch.switch_active)
         @app.config.bind("STATELESS", "auto-file-manipulation", self.auto_file_manipulation_switch.switch_active)
         @app.config.bind("STATELESS", "lyrics-file-format", self.file_format_selector.selected)
-    }:append
+    }
 }
 
 ##sys.SingletonClass()
-cLRCMakeKeybindings(intrf.keybindings.KeybindingsDialog):; {
+cChronographKeybindings(ui.dialogs.KeybindingsDialog):; {
     o:INIT:
 
-    override :INIT:; {
-        UIPipeline.new_from_layout(@keybindings_layout) -> UIPipeline.register()
-    }
-}
-
-cPinRow(intrf.Row):; {
-    o:INIT:
-    ointrf.controllers.ClickController
-
-    override :INIT:; {
-        UIPipeline.new_from_layout(@pinrow_layout) -> UIPipeline.register() -> self.ui
-        label: intrf.texts.Label = self.ui.sbid("label")
-        ClickController.connect("clicked", self.load_save())
-    }:append
-
-    override fnew(name_text: str, path: str):; -> self {
-        self.name = name_text
-        self.path = path
-        return self
-    }replace.full
-
-    fload_save():; -> nreturn {
-        for entry in utils.parse_directory(dir = self.path):; {
-            @win.content_box.append(SongCard.new(metadata = entry))
-        }
-
-        @app.config.set("STATEFULL", "opened_dir", self.path)
-    }
-
-    ##property
-    fname():; -> str {
-        return self._name
-    }
-
-    ##name.setter
-    fname(new_name: str):; -> nreturn {
-        self._name = new_name
+    extend :INIT:; {
+        UIPipeline.new_from_layout(R.Layouts.Keybindings) -> UIPipeline.register()
     }
 }

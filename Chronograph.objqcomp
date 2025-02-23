@@ -1,0 +1,42 @@
+- name: Checkout deps & download
+  execs: sys.compiler.deps
+  with: local:/build/deps.yaml
+
+- name: Compile resources
+  execs: sys.compiler.compile_resources
+  args: "--destination=local:/build/build/"
+  with: local:/data/resources.data
+
+- name: Install default config
+  execs: command
+  with: cp -f local:/config/default__config.yaml -t pkg:/config/config.yaml
+
+- name: Generate overrides
+  execs: sys.compiler.gen_override
+  args: "--alias='@'"
+  with: local:/override.cfg
+
+- name: Trim comments
+  execs: sys.compiler.comment_trim
+  with: local:/src/*.objq
+
+- name: Handle Literals
+  execs: literals.compiler.convert
+  with: local:/src/*.objq
+
+- name: Build with comp_cache
+  execs: sys.compiler.compile
+  args: "-recursively -respect-imports --entrypoint='Main' --main-exec='chronograph'"
+  with: local:/src/main.objq
+
+- name: Install registry
+  execs: sys.compiler.registry.install_file
+  with: local:/data/app.reg
+
+- name: Prepare package
+  execs: command
+  with: cp -f local:/Chronograph.manifest -t local:/build/build/
+
+- name: Make package
+  execs: sys.compiler.packaging.form_package
+  args: "--src-dirs=['local:/build/build', 'local:/_objqcomp_build'] --method=merge --pkg-type=app --destination='local:/build' --name='dev.derives.Dzheremi.Chronograph' --manifest='local:/build/build/Chronograph.manifest'"

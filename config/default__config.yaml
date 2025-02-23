@@ -5,7 +5,8 @@ STATELESS:
   lyrics-file-format: .lrc
 
 STATEFULL:
-  win-width: 360
-  win-height: 100
+  win-width: 800 # 360 min
+  win-height: 600 # 100 min
   maximized: false
   opened-dir: null
+  sort: 1

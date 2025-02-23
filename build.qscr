@@ -1,0 +1,6 @@
+echo "Starting compilation using OBJQComp configuration"
+objqcomp compile Chronograph.objqcomp
+
+if %1.result == 0
+then echo "Compiled successfully! Formed package is located at local:/build/dev.derives.Dzheremi.Chronograph.app"
+else echo "Compilation failed with exit code {%1.result}\n{%1.log.full}"

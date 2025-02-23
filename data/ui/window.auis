@@ -1,0 +1,320 @@
+import {
+    sys.math.nums -> inf
+}
+
+define {
+    qtk.interface -> ui
+    ui.icons -> ico
+}
+
+TEMPLATE:window <- ui.ApplicationWindow:
+  ! actions: ["min", "max", "close"]
+  ! resizeable: true
+  ! min-width: 360
+  ! min-height: 100
+
+  ui.navigation.Navigation:
+    ! id: "navigation"
+
+    ui.navigation.SidebarNavigation:
+      ! id: "sidebar_nav"
+      ! sidebar: sidebar
+      ! sidebar-side: LEFT
+      ! sidebar-toggled: bind toggle_sidebar_button.visible inverted
+
+      Column:
+        ui.headers.HeaderBar:
+          [start]
+          ui.buttons.Button:
+            ! id: "toggle_sidebar_button"
+            ! icon: ico.SIDEBAR_LEFT
+            ! tooltip: _("Toggle sidebar")
+            ! visible: true
+          ui.buttons.MenuButton:
+            ! icon: ico.OPEN_DIR
+            ! tooltip: _("Select a source for a media")
+            ! menu: source_menu
+          ui.buttons.ToggleButton:
+            ! id: "toggle_search_button"
+            ! icon: ico.SEARCH_LOUPE
+            ! tooltip: _("Toggle search ")
+            ! toggled: false
+            ! visible: false
+
+          [center]
+          ui.headers.TitleWidget:
+            ! text: _("Chronograph")
+
+          [end]
+          ui.buttons.Button:
+            ! id: "reparse_dir_button"
+            ! icon: ico.RELOAD_CIRCLE_2_ARROWS
+            ! tooltip: _("Re-parse current directory")
+          ui.buttons.Button:
+            ! id: "pin_directory_button"
+            ! icon: ico.PIN
+            ! tooltip: _("Add current directory to the Saves")
+          ui.buttons.MenuButton:
+            ! id: "app_menu_button"
+            ! icon: ico.APP_MENU
+            ! tooltip: _("Main App menu")
+            ! menu: app_menu
+
+        ui.headers.SearchBar:
+          ! id: "search_bar"
+          ! max-width: 500
+          ! placeholder-text: _("Search")
+          ! collapsed: bind toggle_search_button.toggled bidirectional
+        
+        ui.containers.ScrolledWindow:
+          ! scrolling-direction: VERTICAL
+
+          ui.containers.ContentBox:
+            ! id: "library"
+            ! same-sized: true
+            ! valign: START
+            ! halign: CENTER
+            ! scrolling-direction: VERTICAL
+            ! column-spacing: 12
+            ! row-spacing: 12
+            ! margin-all: 12
+
+ui.navigation.NavigationPage:
+  ! id: "sidebar"
+
+  Column:
+    ui.headers.HeaderBar:
+      [start]
+      ui.buttons.Button:
+        ! id: "toggle_sidebar_button_sidebar"
+        ! icon: ico.SIDEBAR_LEFT
+        ! tooltip: _("Toggle sidebar")
+        ! visible: bind toggle_sidebar_button.visible inverted
+
+      [center]
+      ui.headers.TitleWidget:
+        ! text: _("Saves")
+
+    ui.containers.ScrolledWindow:
+      ! scrolling-direction: VERTICAL
+
+      ui.containers.ListBox:
+        ! id: "saves"
+        ! selection-mode: SINGLE
+        ! style-classes: ["sidebar_list_box"]
+
+ui.navigation.NavigationPage:
+  ! id: "sync_nav_page"
+
+  Column:
+    ui.headers.HeaderBar:
+      [start]
+      ui.buttons.Button:
+        ! id: "back_button"
+        ! icon: ico.ARROW_LEFT_SHORT
+        ! action: $ sbid("navigation").set_navigation(sbid("navigation").content) $
+      
+      [center]
+      ui.headers.TitleWidget:
+        ! text: _("Syncing")
+
+      [end]
+      ui.buttons.MenuButton: bind app_menu_button
+
+    ui.containers.Constraint:
+      ! max-width: 600
+
+      Column:
+        Row:
+          ! spacing: 6
+          ! styles: [
+            render-background: true
+          ]
+
+          ui.images.Image:
+            ! id: "cover_sync"
+            ! width: 160
+            ! height: 160
+            ! styles: [
+              border-radius: 16
+            ]
+          
+          Column:
+            ui.texts.Label:
+              ! id: "title_sync"
+            ui.texts.Label:
+              ! id: "artist_sync"
+            ui.media.AudioControls:
+              ! id: "controls"
+              ! enable-repeat-button: true
+
+        Row:
+          ! spacing: 6
+          ! halign: CENTER
+          ! margin-bottom: 4
+
+          ui.buttons.Button:
+            ! id: "sync_button"
+            ! icon: ico.STOPWATCH_LAP
+            ! tooltip: _("Sync selected line")
+            ! styles: [
+              border-radius: inf,
+              background-color: qtk.colors.UserColors.PRIMARY_ACTION,
+              icon-color: qtk.colors.UserColors.REVERSE_PRIMARY_ACTION
+            ]
+
+          ui.buttons.Button:
+            ! id: "replay_button"
+            ! icon: ico.REPLAY
+            ! tooltip: _("Replay selected line")
+            ! styles: [
+              border-radius: inf
+            ]
+
+          ui.buttons.Button:
+            ! id: "sync_back_button"
+            ! icon: ico.PLAY_TRACK_BACKWARD
+            ! tooltip: _("Re-sync selected line for 100ms backwards")
+            ! styles: [
+              border-radius: inf
+            ]
+
+          ui.buttons.Button:
+            ! id: "sync_forw_button"
+            ! icon: ico.PLAY_TRACK_FORWARD
+            ! tooltip: _("Re-sync selected line for 100ms forwards")
+            ! styles: [
+              border-radius: inf
+            ]
+
+          ui.buttons.MenuButton:
+            ! icon: ico.DOWNLOAD_PLATE
+            ! tooltip: _("Import lyrics from…")
+            ! menu: import_menu
+            ! styles: [
+              border-radius: inf,
+              background-color: qtk.colors.UserColors.ON_CONTENT_TRASPARENT,
+              icon-color: qtk.colors.UserColors.REVERSE_ON_CONTENT_TRASPARENT
+            ]
+
+          ui.buttons.MenuButton:
+            ! icon: ico.UPLOAD_PLATE
+            ! tooltip: _("Export lyrics to…")
+            ! menu: export_menu
+            ! styles: [
+              border-radius: inf,
+              background-color: qtk.colors.UserColors.ON_CONTENT_TRASPARENT,
+              icon-color: qtk.colors.UserColors.REVERSE_ON_CONTENT_TRASPARENT
+            ]
+
+          Row:
+          
+          ui.buttons.MenuButton:
+            ! icon: ico.LETTER_A_CAPITALIZED
+            ! tooltip: _("Lines actions")
+            ! menu: lines_menu
+            ! styles: [
+              border-radius: inf,
+              background-color: qtk.colors.UserColors.ON_CONTENT_TRASPARENT,
+              icon-color: qtk.colors.UserColors.REVERSE_ON_CONTENT_TRASPARENT
+            ]
+
+          ui.buttons.Button:
+            ! id: "file_info_button"
+            ! icon: ico.INFO_CIRCLED
+            ! styles: [
+              border-radius: inf
+            ]
+
+        ui.containers.ScrolledWindow:
+          ! scrolling-direction: VERTICAL
+
+          ui.containers.ListBox:
+            ! id: "lines_box"
+            ! selection-mode: SINGLE
+
+        Row:
+          ui.buttons.Button:
+            ! id: "add_line_button"
+            ! icon: ico.MATH_PLUS
+            ! tooltip: _("Add a new line")
+
+menu:
+  ! id: "app_menu"
+  section:
+    submenu:
+      ! name: _("Sort")
+      item:
+        ! name: _("A-Z")
+        ! action: "win.sort"
+        ! arg: 1
+      item:
+        ! name: _("Z-A")
+        ! action: "win.sort"
+        ! arg: 2
+  section:
+    item:
+      ! name: _("Quick Edit")
+      ! action: "win.open_quick_edit"
+  section:
+    item:
+      ! name: _("Preferences")
+      ! action: "win.preferences"
+    item:
+      ! name: _("Keybindings")
+      ! action: "win.keybindings"
+    item:
+      ! name: _("About App")
+      ! action: "app.about"
+
+menu:
+  ! id: "import_menu"
+  section:
+    item:
+      ! name: _("Clipboard")
+      ! action: "win.import_from_clipboard"
+    item:
+      ! name: _("File")
+      ! action: "win.import_from_file"
+    item:
+      ! name: "LRClib"
+      ! action: "win.import_from_lrclib"
+
+menu:
+  ! id: "export_menu"
+  section:
+    item:
+      ! name: _("Clipboard")
+      ! action: "win.export_to_clipboard"
+    item:
+      ! name: _("File")
+      ! action: "win.export_to_file"
+    item:
+      ! name: "LRClib"
+      ! action: "win.export_to_lrclib"
+
+menu:
+  ! id: "lines_menu"
+  section:
+    item:
+      ! name: _("Remove line")
+      ! action: "win.remove_line"
+    item:
+      ! name: _("Prepend line to selected")
+      ! action: "win.prepend_line"
+    item:
+      ! name: _("Append line to selected")
+      ! action: "win.append_line"
+    item: 
+      ! name: _("Append line to the end")
+      ! action: "win.append_line_end"
+
+menu:
+  ! id: "source_menu"
+  section:
+    item:
+      ! name: _("Open Direcotry")
+      ! action: "win.open_dir"
+    item:
+      ! name: _("Open File")
+      ! action: "win.open_file"

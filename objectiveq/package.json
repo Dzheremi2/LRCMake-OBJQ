@@ -15,11 +15,22 @@
       "aliases": ["ObjectiveQ", "objectiveq"],
       "extensions": [".objq"],
       "configuration": "./language-configuration.json"
+    },
+    {
+      "id": "auis",
+      "aliases": ["AUIS", "auis"],
+      "extensions": [".auis"],
+      "configuration": "./language-configuration.json"
     }],
     "grammars": [{
       "language": "objectiveq",
       "scopeName": "source.objq",
       "path": "./syntaxes/objectiveq.tmLanguage.json"
+    },
+    {
+      "language": "auis",
+      "scopeName": "source.auis",
+      "path": "./syntaxes/auis.tmLanguage.json"
     }]
   }
 }

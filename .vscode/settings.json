@@ -2,7 +2,9 @@
     "files.associations": {
         "*.manifest": "yaml",
         "*.objqcomp": "yaml",
-        "*.reg": "properties"
+        "*.data": "yaml",
+        "*.reg": "properties",
+        "*.qscr": "shellscript"
     },
     "material-icon-theme.files.associations": {
         "*.objq": "objectiveq"

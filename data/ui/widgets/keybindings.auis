@@ -1,0 +1,48 @@
+define {
+  qtk.interface -> ui
+}
+
+TEMPLATE:Keybindings <- ui.dialogs.KeybindingsDialog:
+  ! overlay-window: true
+
+  ui.keybindings.Section:
+    ! name: _("Basic")
+
+    ui.keybindings.Keybind:
+      ! name: _("Quit")
+      ! action: "app.quit"
+    
+    ui.keybindings.Keybind:
+      ! name: _("Toggle sidebar")
+      ! action: "win.toggle_sidebar"
+
+    ui.keybindings.Keybind:
+      ! name: _("Select dicrectory")
+      ! action: "win.select_dir"
+
+    ui.keybindings.Keybind:
+      ! name: _("Open Preferences")
+      ! action: "win.preferences"
+    
+    ui.keybindings.Keybind:
+      ! name: _("Open Keybindings")
+      ! action: "win.keybindings"
+
+  ui.keybindings.Section:
+    ! name: _("Sync page")
+
+    ui.keybindings.Keybind:
+      ! name: _("Sync/Re-sync line")
+      ! action: "win.sync_line"
+
+    ui.keybindings.Keybind:
+      ! name: _("Replay line")
+      ! action: "win.replay_line"
+
+    ui.keybindings.Keybind:
+      ! name: _("Resync line 100ms backward")
+      ! action: "win.100ms_rew"
+
+    ui.keybindings.Keybind:
+      ! name: _("Resync line 100ms forward")
+      ! action: "win.100ms_forw"

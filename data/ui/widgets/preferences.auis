@@ -1,0 +1,52 @@
+define {
+  qtk.interface -> ui
+  ui.icons -> ico
+}
+
+TEMPLATE:Preferences <- ui.dialogs.PreferencesDialog:
+  ! overlay-window: true
+
+  ui.preferences.Page:
+    ! name: _("General")
+    ! icon: ico.HOME
+
+    ui.preferences.Section:
+      ! name: _("Behavior")
+
+      ui.rows.SwitchRow:
+        ! id: "reset_quick_edit_switch"
+        ! title: _("Reset quick edit dialog on close")
+        ! subtitle: _("Should the Quick Edit dialog be resetted on close or not")
+        ! switch-active: false
+
+      ui.rows.SwitchRow:
+        ! id: "save_session_switch"
+        ! title: _("Save session on app close")
+        ! subtitle: _("Opening last directory on next app startup")
+        ! switch-active: false
+
+    ui.preferences.Section:
+      ! name: _("Sync page")
+
+      ui.rows.ExpandRow:
+        ! id: "auto_file_manipulation_switch"
+        ! title: _("Automatic file manipulation")
+        ! subtitle: _("Automatically creates and updates files on lyrics change")
+        ! switch: true
+        ! switch-active: false
+
+        ui.rows.SelectionRow:
+          ! id: "file_format_selector"
+          ! title: _("File format")
+          ! subtitle: _("File format for auto manipulation")
+          ! menu: file_format
+
+selectionMenu: 
+  ! id: "file_format"
+
+  section:
+    item:
+      ! name: ".txt"
+      ! default: true
+    item:
+      ! name: ".lrc"

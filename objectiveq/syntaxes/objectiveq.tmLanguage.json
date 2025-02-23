@@ -20,7 +20,7 @@
         },
         {
             "name": "keyword.control.objq",
-            "match": "\\b(define|import|from|export|override)\\b",
+            "match": "\\b(define|import|from|export|override|extend)\\b",
             "fontStyle": "italic"
         },
         {
@@ -85,7 +85,7 @@
         },
         {
             "name": "variable.other.readwrite.objq",
-            "match": "\\b(?!(define|import|from|export|override|:append|for|while|in|return|:replace|null|@|self|f|pf))\\w+\\b(?<!\\.)(?!=)"
+            "match": "\\b(?!(define|import|extend|from|export|override|:append|for|while|in|return|:replace|null|@|self|f|pf))\\w+\\b(?<!\\.)(?!=)"
         },
         {
             "name": "string.quoted.single.objq",

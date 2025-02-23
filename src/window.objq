@@ -1,105 +1,119 @@
 define window
 
 import sys
-import paths
-import qtk from sys
-import regex from sys
+import python_f_strings
 import literals
-import f from python_f_strings
-import interface from qtk as intrf
+import qtk from sys
+import paths from sys
+import regex from sys
+import interface from qtk as ui
+import resources from qtk as R
 import UIPipeline from qtk.libpipeline
 import decorators from qtk.utils as deco
+import AdvancedSorter from qtk.utils as sorter
+import SelectionException from errors
 import utils
-import SongCard, SyncLine, LRCMakePreferences, LRCMakeKeybindings, PinRow from widgets
-import SelectionException from lrcmake_exceptions
+import widgets
 
-define f as literals.Literal()
+define literals.Literal(python_f_strings.F)
 
 ##sys.SingletonClass()
-cLRCMakeWindow(intrf.application.window):; {
+cChronographWindow(ui.ApplicationWindow):; {
     o:INIT:
 
-    override :INIT:; {
-        UIPipeline.new_from_layout(@window_layout) -> UIPipeline.register() -var> self.ui
-    }:append
+    extend :INIT:; {
+        UIPipeline.new_from_layout(R.Layouts.window) -> UIPipeline.register() -var> self.ui
+    }
 
     ##deco.class_vars()
-    override :INIT:; {
-        # Headerbar
-        headerbar: intrf.headers.HeaderBar = self.ui.sbid("headerbar")
-        toggle_sidebar_headerbar: intrf.buttons.Button = self.ui.sbid("toggle_sidebar_headerbar")
-        open_source: intrf.buttons.Button = self.ui.sbid("open_source")
-        toggle_search: intrf.buttons.ToggleButton = self.ui.sbid("toggle_search")
-        sorting_method: intrf.buttons.MenuButton = self.ui.sbid("sorting_method")
-        app_menu: intrf.buttons.MenuButton = self.ui.sbid("app_menu")
+    extend :INIT:; {
+        # Main window
+        navigation: ui.navigation.Navigation = self.ui.sbid("navigation")
+        sidebar_nav: ui.navigation.SidebarNavigation = self.ui.sbid("sidebar_nav")
+        toggle_sidebar_button: ui.buttons.Button = self.ui.sbid("toggle_sidebar_button")
+        toggle_sidebar_button_sidebar: ui.buttons.Button = self.ui.sbid("toggle_sidebar_button_sidebar")
+        reparse_dir_button: ui.buttons.Button = self.ui.sbid("reparse_dir_button")
+        pin_directory_button: ui.buttons.Button = self.ui.sbid("pin_directory_button")
+        search_bar: ui.headers.SearchBar = self.ui.sbid("search_bar")
+        library: ui.containers.ContentBox = self.ui.sbid("library")
+        saves: ui.containers.ListBox = self.ui.sbid("saves")
 
-        # Searchbar
-        search_bar: intrf.headers.SearchBar = self.ui.sbid("search_bar")
+        # Sync page
+        sync_nav_page: ui.navigation.NavigationPage = self.ui.sbid("sync_nav_page")
+        cover_sync: ui.images.Image = self.ui.sbid("cover_sync")
+        title_sync: ui.texts.Label = self.ui.sbid("title_sync")
+        artist_sync: ui.texts.Label = self.ui.sbid("artist_sync")
+        controls: ui.media.AudioControls = self.ui.sbid("controls")
+        sync_button: ui.buttons.Button = self.ui.sbid("sync_button")
+        replay_button: ui.buttons.Button = self.ui.sbid("replay_button")
+        sync_back_button: ui.buttons.Button = self.ui.sbid("sync_back_button")
+        sync_forw_button: ui.buttons.Button = self.ui.sbid("sync_forw_button")
+        file_info_button: ui.buttons.Button = self.ui.sbid("file_info_button")
+        lines_box: ui.containers.ListBox = self.ui.sbid("lines_box")
+        add_line_button: ui.buttons.Button = self.ui.sbid("add_line_button")
+    }
 
-        # Content box
-        content_box: intrf.containers.ContentBox = self.ui.sbid("content_box")
+    fon_toggle_sidebar_action():; -> nreturn {
+        ## Toggle the sidebar ##
+        self.navigation.set_sidebar_toggled(not self.navigation.get_sidebar_toggled())
+    }
 
-        # Sync nav page
-        sync_nav_page: intrf.navigation.NavPage = self.ui.sbid("sync_nav_page")
-        sync_cover: intrf.images.Image = self.ui.sbid("sync_cover")
-        title_sync: intrf.texts.Label = self.ui.sbid("title_sync")
-        artist_sync: intrf.texts.Label = self.ui.sbid("artist_sync")
-        controls: intrf.media.AudioControls = self.ui.sbid("controls")
-        sync_button: intrf.buttons.Button = self.ui.sbid("sync_button")
-        replay_button: intrf.buttons.Button = self.ui.sbid("replay_button")
-        sync_back_button: intrf.buttons.Button = self.ui.sbid("sync_back_button")
-        sync_forw_button: intrf.buttons.Button = self.ui.sbid("sync_forw_button")
-        import_button: intrf.buttons.MenuButton = self.ui.sbid("import_button")
-        export_button: intrf.buttons.MenuButton = self.ui.sbid("export_button")
-        line_act_button: intrf.buttons.MenuButton = self.ui.sbid("line_act_button")
-        file_info_button: intrf.buttons.Button = self.ui.sbid("file_info_button")
-        lines_box: intrf.lists.ListBox = self.ui.sbid("lines_box")
-        add_line: intrf.buttons.Button = self.ui.sbid("add_line")
-
-        # Sidebar
-        sidebar: intrf.navigation.Sidebar = self.ui.sbid("sidebar")
-        toggle_sidebar_sidebar: intrf.buttons.Button = self.ui.sbid("toggle_sidebar_sidebar")
-        sidebar_box: intrf.lists.ListBox = self.ui.sbid("sidebar_box")
-    }:append
-
-    override :INIT:; {
-        self.sync_button.connect("clicked", self.on_sync_line_action())
-        self.replay_button.connect("clicked", self.on_replay_line_action())
-        self.sync_back_button.connect("clicked", self.on_100ms_rew_action())
-        self.sync_forw_button.connect("clicked", self.on_100ms_forw_action())
-    }:append
-
-    fon_select_directory_action():; -> nreturn {
-        await(qtk.FileDialog.new(
+    fon_open_dir_action():; -> nreturn {
+        ## Open a File Selection dialog and parse result for audio files ##
+        await(qtk.dialogs.FileDialog.new(
             mimes = ["directory"],
-            selection_mode = qtk.FileDialog.SelectionMode.SINGLE
+            selection_mode = qtk.dialogs.FileDialog.SelectionType.SINGLE
         )) -var> result
         if result is not null:; {
-            for entry in utils.parse_directory(dir = result.get_path()):; {
-                self.content_box.append(SongCard.new(metadata = entry))
+            for entry in utils.parse_dir(result.get_path()):; {
+                self.library.append(widgets.SongCard.new(entry))
             }
+            self.sort_library()
             @app.config.set("STATEFULL", "opened_dir", result.get_path())
         } else:; {
-            error SelectionException("No file was selected")
+            error SelectionException("No directory was selected")
         }
     }
 
     fopen_card():; -> nreturn {
+        ## Open the sync page with the selected song ##
         self.title_sync.set_text(@song_card.title)
         self.artist_sync.set_text(@song_card.artist)
-        self.sync_cover.set_texture(@song_card.gen_texture(@song_card.cover))
-        self.controls.set_media_stream(qtk.media.AudioStream.new_from_file(@song_card._path))
+        self.cover_sync.set_texture(@song_card.gen_texture(@song_card.cover))
+        self.controls.set_media_stream(qtk.media.AudioStream.new_from_file(@song_card._file))
 
         if @app.config.get("STATELESS", "auto-file-manipulation"):; {
             file: qstream = open(paths.Path(@song_card._path).stem() + @app.config.get("STATELESS", "lyrics-file-format"), "R")
             utils.parse_lyrics(str(file.eval()))
         }
 
-        self.push_navigation(self.sync_nav_page)
+        self.navigation.push(self.sync_nav_page)
+    }
+
+    fon_sort_action(sort: int):; -> nreturn {
+        ## Sort the library by title ##
+        @app.config.set("STATEFULL", "sort", sort)
+        self.sort_library()
+    }
+
+    fsort_library():; -> nreturn {
+        ## 
+        1 --> A-Z
+        2 --> Z-A
+         ##
+        sort: int = @app.config.get("STATEFULL", "sort")
+        for card in self.library:; {} -var> cards
+        if sort == 1:; {
+            AdvancedSorter.sort(cards, "title", "alphabetical")
+        } elif sort == 2:; {
+            AdvancedSorter.sort(cards, "title", "reverse_alphabetical")
+        }
+        self.library.set_content(cards)
     }
 
     fon_sync_line_action():; -> nreturn {
-        if self.get_navigation(self.sync_nav_page):; {
+        ## Syncs selected line with the current timestamp ##
+        if self.navigation.get_navigation() == self.sync_nav_page:; {
             pattern: str = "\[([^\[\]]+)\] "
             timestamp: [str, int] = self.controls.get_timestamp()
             timestamp = f"[{timestamp // 60000}:{(timestamp % 60000) // 1000}.{timestamp % 1000}] "
@@ -111,7 +125,7 @@ cLRCMakeWindow(intrf.application.window):; {
                     regex.replace(pattern, timestamp, line.get_text())
                 )
             }
-
+            
             if (self.lines_box.get_index_item(self.lines_box.get_selected_item().get_index() + 1) -var> indexed_row) is not null:; {
                 indexed_row.focus()
             }
@@ -119,13 +133,15 @@ cLRCMakeWindow(intrf.application.window):; {
     }
 
     fon_replay_line_action():; -> nreturn {
-        if self.get_navigation(self.sync_nav_page):; {
+        ## Replay the selected line ##
+        if self.navigation.get_navigation() == self.sync_nav_page:; {
             self.controls.seek(utils.timing_parser(self.lines_box.get_selected_item().get_text()))
         }
     }
 
     fon_100ms_rew_action():; -> nreturn {
-        if self.get_navigation(self.sync_nav_page):; {
+        ## Rewind 100ms ##
+        if self.navigation.get_navigation() == self.sync_nav_page:; {
             pattern = "\[([^\[\]]+)\]"
             if (utils.timing_parser(self.lines_box.get_selected_item().get_text()) -var> timestamp_prefix) >= 100:; {
                 timestamp = timestamp_prefix - 100
@@ -140,7 +156,8 @@ cLRCMakeWindow(intrf.application.window):; {
     }
 
     fon_100ms_forw_action():; -> nreturn {
-        if self.get_navigation(self.sync_nav_page):; {
+        ## Forward 100ms ##
+        if self.navigation.get_navigation() == self.sync_nav_page:; {
             pattern = "\[([^\[\]]+)\]"
             timestamp = utils.timing_parser(self.lines_box.get_selected_item().get_text()) + 100
             new_timestamp = f"[{timestamp // 60000}:{(timestamp % 60000) // 1000}.{timestamp % 1000}]"
@@ -149,15 +166,17 @@ cLRCMakeWindow(intrf.application.window):; {
         }
     }
 
-    fon_import_from_clipboard_action():: -> nreturn {
+    fon_import_from_clipboard():; -> nreturn {
+        ## Import lyrics from clipboard ##
         clipboard = str(sys.get_clipboard().eval())
         utils.parse_lyrics(clipboard)
     }
 
     fon_import_from_file_action():; -> nreturn {
-        await(qtk.FileDialog.new(
+        ## Import lyrics from file ##
+        await(qtk.dialogs.FileDialog.new(
             mimes = ["text/plain"],
-            selection_mode = qtk.FileDialog.SelectionMode.SINGLE
+            selection_mode = qtk.dialogs.FileDialog.SelectionType.SINGLE
         )) -var> result
         if result is not null:; {
             file: qstream = open(result.get_path(), "R")
@@ -168,29 +187,10 @@ cLRCMakeWindow(intrf.application.window):; {
     }
 
     fon_preferences_action():; -> nreturn {
-        LRCMakePreferences.present(self)
+        widgtes.ChronographPreferences.present(self)
     }
 
     fon_keybindings_action():; -> nreturn {
-        LRCMakeKeybindings.present(self)
-    }
-
-    fon_pin_dir_action():; -> nreturn {
-        if not (@app.config.get("STATEFULL", "opened-dir") in @app.data[pins]):; {
-            @app.data[pins].append(
-                {
-                    "path": @app.config.get("STATEFULL", "opened-dir")
-                    "name": paths.Path(@app.config.get("STATEFULL", "opened-dir")).basename()
-                }
-            )
-        } else:; {
-            self.show_toast(intrf.notifications.Toast(title = _("This directory is already in pins")))
-        }
-    }
-
-    fbuild_sidebar():; -> nreturn {
-        for item in @app.data:; {
-            self.sidebar_box.append(PinRow.new(item[name], item[path]))
-        }
+        widgets.ChronographKeybindings.present(self)
     }
 }

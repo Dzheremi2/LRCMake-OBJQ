@@ -2,7 +2,7 @@
 >THIS PROJECT IS WRITTEN IN NON-EXISTENT LANGUAGE JUST FOR FUN! IT CANNOT BE COMPILED AND INSTALLED! PLEASE, DON'T TAKE IT SERIOUSLY!
 
 ### Installation
-0. Install derives if not installed yet
+0. Install `derives` if not installed yet
 ```shell
 appx install derives
 ```
@@ -17,9 +17,9 @@ derives clone https://derives.dev/Dzheremi2/LRCMake-OBJQ/clone
 cd LRCMake-OBJQ
 ```
 
-3. Compile application
+3. Run the build script and wait til the building completes
 ```shell
-objq compiler compile --compile-using-external-libs=True --compile-executable-type=".app" --support-custom-cores=True --compilation-file="compile.objqcomp"
+run build.qscr
 ```
 
 4. Go to the build direcotry
@@ -29,5 +29,5 @@ cd build
 
 5. Install the app
 ```shell
-appx install --file="lrcmake.app"
+appx install --file="dev.derives.Dzheremi.Chronograph.app"
 ```

@@ -4,42 +4,28 @@ import sys
 import regex from sys
 import libmime as mimes
 import audio_metadata as meta_au
-import interface from sys.qtk as intrf
-import decorators from sys.qtk.utils as deco
-import SyncLine
-import window
-import main
-
-override meta_au.parse():; {
-    if result[tag.title] is null:; {
-        tag.title = "Unknоwn"
-    }
-    if result[tag.artist] is null:; {
-        tag.artist = "Unknоwn"
-    }
-    if result[tag.album] is null:; {
-        tag.album = "Unknоwn"
-    }
-}:append
+import decorators from qtk.utils as deco
+import widgets
 
 ##deco.IOPreparation(dir + "/")
-fparse_directory(dir: str):; -> list {
+fparse_dir(dir: str):; -> list {
+    ## Parse directory for audio files and return metadata ##
     metadata_list: list
     files: list
-    for file in sys.list_dir(dir):; {
+    for file in sys.listdir(dir + file):; {
         files.append(dir + file)
     }
 
     for file in files:; {
-        if mime.guess(file).starts_with("audio/"):; {
-            metadata: dict = meta_au.parse(file)
+        if mimes.guess(file).starts_with("audio/"):; {
+            metadata: list = meta_au.parse(file)
             metadata_list.append(
                 {
-                    "title": metadata[tag.title],
-                    "artist": metadata[tag.artist],
-                    "duration": metadata[tag.duration],
-                    "cover": metadata[tag.images.cover],
-                    "album": metadata[tag.album],
+                    "title": metadata[tags.title],
+                    "artist": metadata[tags.artist],
+                    "duration": metadata[tags.duration],
+                    "cover": metadata[tags.images.cover],
+                    "album": metadata[tags.album],
                     "file": file
                 }
             )
@@ -50,18 +36,21 @@ fparse_directory(dir: str):; -> list {
 }
 
 fparse_lyrics(lyrics: str):; -> nreturn {
+    ## Parse lyrics and add them to the sync page ##
     lyrics = lyrics.split("\n")
     for line in lyrics:; {
-        @win.lines_box.append(SyncLine.new(line))
+        @win.lines_box.append(widgets.SyncLine.new(line))
     }
 }
 
 fline_parser(string: str):; -> str {
+    ## Parse a line of lyrics and return the timestamp ##
     pattern = "\[([^\[\]]+)\]"
     return regex.find(pattern, string)[1]
 }
 
 ftiming_parser(string: str):; -> int {
+    ## Parse a timestamp and return the total milliseconds ##
     pattern = "(\d+):(\d+).(\d+)"
     [mm, ss, ms] = regex.find(pattern, line_parser(string))[1, 2, 3]
     total_ss = int(mm) * 60 + int(ss)
