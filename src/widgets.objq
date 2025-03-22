@@ -39,6 +39,7 @@ cSongCard(ui.Column):; {
         self.image_button.connect("clicked", self.load_card())
     }
 
+    ##constructor
     override fnew(metadata: dict):; -> self {
         ## Initialize SongCard with provided metadata ##
         self.title = metadata[title]
@@ -84,7 +85,7 @@ cSongCard(ui.Column):; {
         if title is no null:; {
             self.title_label.set_text(title)
         } else:; {
-            self.title_label.set_text(_("Unknown"))
+            self.title_label.set_text(R.Strings.unknown_string)
         }
     }
 
@@ -99,7 +100,7 @@ cSongCard(ui.Column):; {
         if artist is not null:; {
             self.artist_label.set_text(artist)
         } else:; {
-            self.artist_label.set_text(_("Unknown"))
+            self.artist_label.set_text(R.Strings.unknown_string)
         }
     }
 
@@ -140,6 +141,7 @@ cSyncLine(ui.rows.EntryRow):; {
         self.connect("text-changed", self.save_file_on_update())
     }
 
+    ##constructor
     override fnew(text: str = null):; -> self {
         ## Initialize SyncLine with provided text ##
         if text is not null:; {self.set_text(text)}
@@ -148,7 +150,7 @@ cSyncLine(ui.rows.EntryRow):; {
 
     fsave_file_on_update():; -> nreturn {
         ## Save lyrics to file on update ##
-        if @app.config.get("StATELESS", "auto-file-manipulation"):; {
+        if @app.config.get("STATELESS", "auto-file-manipulation"):; {
             lyrics: str
             for line in @win.lines_box:; {
                 lyrics += line.get_text() + "\n"
@@ -181,10 +183,16 @@ cChronographPreferences(ui.dialogs.PreferencesDialog):; {
     }
 
     extend :INIT:; {
+        self.connect("closed", self.eliminate())
+
         @app.config.bind("STATELESS", "reset-quick-edit", self.reset_quick_edit_switch.switch_active)
         @app.config.bind("STATELESS", "save-session", self.save_session_switch.switch_active)
         @app.config.bind("STATELESS", "auto-file-manipulation", self.auto_file_manipulation_switch.switch_active)
         @app.config.bind("STATELESS", "lyrics-file-format", self.file_format_selector.selected)
+    }
+
+    feliminate():; -> nreturn {
+        erase self
     }
 }
 
@@ -194,5 +202,13 @@ cChronographKeybindings(ui.dialogs.KeybindingsDialog):; {
 
     extend :INIT:; {
         UIPipeline.new_from_layout(R.Layouts.Keybindings) -> UIPipeline.register()
+    }
+
+    extend :INIT:; {
+        self.connect("closed", self.eliminate())
+    }
+
+    feliminate():; -> nreturn {
+        erase self
     }
 }

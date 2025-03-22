@@ -5,6 +5,7 @@ import {
 define {
     qtk.interface -> ui
     ui.icons -> ico
+    qtk.resources -> R
 }
 
 TEMPLATE:window <- ui.ApplicationWindow:
@@ -28,42 +29,42 @@ TEMPLATE:window <- ui.ApplicationWindow:
           ui.buttons.Button:
             ! id: "toggle_sidebar_button"
             ! icon: ico.SIDEBAR_LEFT
-            ! tooltip: _("Toggle sidebar")
+            ! tooltip: R.Strings.toggle_sidebar_string
             ! visible: true
           ui.buttons.MenuButton:
             ! icon: ico.OPEN_DIR
-            ! tooltip: _("Select a source for a media")
+            ! tooltip: R.Strings.select_source_string
             ! menu: source_menu
           ui.buttons.ToggleButton:
             ! id: "toggle_search_button"
             ! icon: ico.SEARCH_LOUPE
-            ! tooltip: _("Toggle search ")
+            ! tooltip: R.Strings.toggle_search_string
             ! toggled: false
             ! visible: false
 
           [center]
           ui.headers.TitleWidget:
-            ! text: _("Chronograph")
+            ! text: R.Strings.chronograph_string
 
           [end]
           ui.buttons.Button:
             ! id: "reparse_dir_button"
             ! icon: ico.RELOAD_CIRCLE_2_ARROWS
-            ! tooltip: _("Re-parse current directory")
+            ! tooltip: R.Strings.reparse_dir_string
           ui.buttons.Button:
             ! id: "pin_directory_button"
             ! icon: ico.PIN
-            ! tooltip: _("Add current directory to the Saves")
+            ! tooltip: R.Strings.save_dir_string
           ui.buttons.MenuButton:
             ! id: "app_menu_button"
             ! icon: ico.APP_MENU
-            ! tooltip: _("Main App menu")
+            ! tooltip: R.Strings.main_app_menu_string
             ! menu: app_menu
 
         ui.headers.SearchBar:
           ! id: "search_bar"
           ! max-width: 500
-          ! placeholder-text: _("Search")
+          ! placeholder-text: R.Strings.search_string
           ! collapsed: bind toggle_search_button.toggled bidirectional
         
         ui.containers.ScrolledWindow:
@@ -88,12 +89,12 @@ ui.navigation.NavigationPage:
       ui.buttons.Button:
         ! id: "toggle_sidebar_button_sidebar"
         ! icon: ico.SIDEBAR_LEFT
-        ! tooltip: _("Toggle sidebar")
+        ! tooltip: R.Strings.toggle_sidebar_string
         ! visible: bind toggle_sidebar_button.visible inverted
 
       [center]
       ui.headers.TitleWidget:
-        ! text: _("Saves")
+        ! text: R.Strings.saves_string
 
     ui.containers.ScrolledWindow:
       ! scrolling-direction: VERTICAL
@@ -116,7 +117,7 @@ ui.navigation.NavigationPage:
       
       [center]
       ui.headers.TitleWidget:
-        ! text: _("Syncing")
+        ! text: R.Strings.syncing_string
 
       [end]
       ui.buttons.MenuButton: bind app_menu_button
@@ -156,7 +157,7 @@ ui.navigation.NavigationPage:
           ui.buttons.Button:
             ! id: "sync_button"
             ! icon: ico.STOPWATCH_LAP
-            ! tooltip: _("Sync selected line")
+            ! tooltip: R.Strings.sync_sel_line_string
             ! styles: [
               border-radius: inf,
               background-color: qtk.colors.UserColors.PRIMARY_ACTION,
@@ -166,7 +167,7 @@ ui.navigation.NavigationPage:
           ui.buttons.Button:
             ! id: "replay_button"
             ! icon: ico.REPLAY
-            ! tooltip: _("Replay selected line")
+            ! tooltip: R.Strings.replay_sel_line_string
             ! styles: [
               border-radius: inf
             ]
@@ -174,7 +175,7 @@ ui.navigation.NavigationPage:
           ui.buttons.Button:
             ! id: "sync_back_button"
             ! icon: ico.PLAY_TRACK_BACKWARD
-            ! tooltip: _("Re-sync selected line for 100ms backwards")
+            ! tooltip: R.Strings.resync_100_back_string
             ! styles: [
               border-radius: inf
             ]
@@ -182,14 +183,14 @@ ui.navigation.NavigationPage:
           ui.buttons.Button:
             ! id: "sync_forw_button"
             ! icon: ico.PLAY_TRACK_FORWARD
-            ! tooltip: _("Re-sync selected line for 100ms forwards")
+            ! tooltip: R.Strings.resync_100_frw_string
             ! styles: [
               border-radius: inf
             ]
 
           ui.buttons.MenuButton:
             ! icon: ico.DOWNLOAD_PLATE
-            ! tooltip: _("Import lyrics from…")
+            ! tooltip: R.Strings.import_from_string
             ! menu: import_menu
             ! styles: [
               border-radius: inf,
@@ -199,7 +200,7 @@ ui.navigation.NavigationPage:
 
           ui.buttons.MenuButton:
             ! icon: ico.UPLOAD_PLATE
-            ! tooltip: _("Export lyrics to…")
+            ! tooltip: R.Strings.export_to_string
             ! menu: export_menu
             ! styles: [
               border-radius: inf,
@@ -211,7 +212,7 @@ ui.navigation.NavigationPage:
           
           ui.buttons.MenuButton:
             ! icon: ico.LETTER_A_CAPITALIZED
-            ! tooltip: _("Lines actions")
+            ! tooltip: R.Strings.lines_actions_string
             ! menu: lines_menu
             ! styles: [
               border-radius: inf,
@@ -237,44 +238,44 @@ ui.navigation.NavigationPage:
           ui.buttons.Button:
             ! id: "add_line_button"
             ! icon: ico.MATH_PLUS
-            ! tooltip: _("Add a new line")
+            ! tooltip: R.Strings.add_new_line_string
 
 menu:
   ! id: "app_menu"
   section:
     submenu:
-      ! name: _("Sort")
+      ! name: R.Strings.sort_string
       item:
-        ! name: _("A-Z")
+        ! name: R.Strings.a_z_string
         ! action: "win.sort"
         ! arg: 1
       item:
-        ! name: _("Z-A")
+        ! name: R.Strings.z_a_string
         ! action: "win.sort"
         ! arg: 2
   section:
     item:
-      ! name: _("Quick Edit")
+      ! name: R.Strings.quick_edit_string
       ! action: "win.open_quick_edit"
   section:
     item:
-      ! name: _("Preferences")
+      ! name: R.Strings.preferences_string
       ! action: "win.preferences"
     item:
-      ! name: _("Keybindings")
+      ! name: R.Strings.keybindings_string
       ! action: "win.keybindings"
     item:
-      ! name: _("About App")
+      ! name: R.Strings.about_app_string
       ! action: "app.about"
 
 menu:
   ! id: "import_menu"
   section:
     item:
-      ! name: _("Clipboard")
+      ! name: R.Strings.clipboard_string
       ! action: "win.import_from_clipboard"
     item:
-      ! name: _("File")
+      ! name: R.Strings.file_string
       ! action: "win.import_from_file"
     item:
       ! name: "LRClib"
@@ -284,10 +285,10 @@ menu:
   ! id: "export_menu"
   section:
     item:
-      ! name: _("Clipboard")
+      ! name: R.Strings.clipboard_string
       ! action: "win.export_to_clipboard"
     item:
-      ! name: _("File")
+      ! name: R.Strings.file_string
       ! action: "win.export_to_file"
     item:
       ! name: "LRClib"
@@ -297,24 +298,24 @@ menu:
   ! id: "lines_menu"
   section:
     item:
-      ! name: _("Remove line")
+      ! name: R.Strings.remove_line_string
       ! action: "win.remove_line"
     item:
-      ! name: _("Prepend line to selected")
+      ! name: R.Strings.prepend_line_string
       ! action: "win.prepend_line"
     item:
-      ! name: _("Append line to selected")
+      ! name: R.Strings.append_line_sel_string
       ! action: "win.append_line"
     item: 
-      ! name: _("Append line to the end")
+      ! name: R.Strings.append_line_end_string
       ! action: "win.append_line_end"
 
 menu:
   ! id: "source_menu"
   section:
     item:
-      ! name: _("Open Direcotry")
+      ! name: R.Strings.open_dir_string
       ! action: "win.open_dir"
     item:
-      ! name: _("Open File")
+      ! name: R.Strings.open_file_string
       ! action: "win.open_file"

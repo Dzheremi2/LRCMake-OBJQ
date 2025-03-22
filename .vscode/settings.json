@@ -4,7 +4,8 @@
         "*.objqcomp": "yaml",
         "*.data": "yaml",
         "*.reg": "properties",
-        "*.qscr": "shellscript"
+        "*.qscr": "shellscript",
+        "source.i18n": "yaml"
     },
     "material-icon-theme.files.associations": {
         "*.objq": "objectiveq"

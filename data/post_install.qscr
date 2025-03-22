@@ -1,0 +1,5 @@
+is_reg_installed= regedit get-section apps/chronograph/system/commands -as-ref
+
+if $is_reg_installed == null
+then regedit install pkg:/data/app.reg
+else 

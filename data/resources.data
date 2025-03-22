@@ -1,4 +1,11 @@
 resPrefix:
+  - name: Strings
+    resources:
+      - name: i18n_index
+        res: local:/i18n/index.i18n
+        preprocess:
+          use: qtk.i18n.generate
+          args: "--output=locales.i18n -merge-single-file"
   - name: Icons
     resources:
       - name: app_icon

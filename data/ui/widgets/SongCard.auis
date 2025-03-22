@@ -24,7 +24,7 @@ TEMPLATE:SongCard <- Column:
       ui.buttons.Button:
         ! id: open_editor_button
         ! icon: ico.PLAY
-        ! tooltip: _("Sync")
+        ! tooltip: R.Strings.sync_string
         ! styles: [
           border-radius: inf,
           background-color: qtk.colors.UserColors.PRIMARY_ACTION,
@@ -34,7 +34,7 @@ TEMPLATE:SongCard <- Column:
       ui.buttons.Button:
         ! id: metadata_editor_button
         ! icon: ico.PEN
-        ! tooltip: _("Edit song metadata")
+        ! tooltip: R.Strings.edit_metadata_string
         ! styles: [
           border-radius: inf,
           background-color: qtk.colors.UserColors.ON_CONTENT_TRASPARENT,
@@ -44,7 +44,7 @@ TEMPLATE:SongCard <- Column:
       ui.buttons.Button:
         ! id: song_info_button
         ! icon: icon.INFO_CIRCLED
-        ! tooltip: _("Show song info")
+        ! tooltip: R.Strings.show_song_info_string
         ! styles: [
           border-radius: inf,
           background-color: qtk.colors.UserColors.ON_CONTENT_TRASPARENT,
@@ -54,7 +54,7 @@ TEMPLATE:SongCard <- Column:
     ui.buttons.ContentButton:
       ! id: image_button
       ! overflow: HIDDEN
-      ! tooltip: _("Open syncing page")
+      ! tooltip: R.Strings.open_syncing_page_string
       ! styles: [
         render-background: true
       ]

@@ -1,3 +1,15 @@
+@uselib:sys
+
+echo "Checking and installing dependencies"
+sys.compiler.deps local:/build/deps.yaml
+
+if %1.result == 0
+then echo "Dependencies installed successfully"
+else (
+    echo "Somethng went wrong while installing dependencies: {%1.result}\n{%1.log.full}"
+    SIGKILL
+)
+
 echo "Starting compilation using OBJQComp configuration"
 objqcomp compile Chronograph.objqcomp
 

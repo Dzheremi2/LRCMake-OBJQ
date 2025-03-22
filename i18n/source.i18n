@@ -1,0 +1,114 @@
+- id: select_source_string
+  msg: Select a source for a media
+- id: toggle_search_string
+  msg: Toggle search
+- id: chronograph_string
+  msg: Chronograph
+- id: reparse_dir_string
+  msg: Re-parse current directory
+- id: save_dir_string
+  msg: Add current directory to the Saves
+- id: main_app_menu_string
+  msg: Main App menu
+- id: search_string
+  msg: Search
+- id: toggle_sidebar_string
+  msg: Toggle sidebar
+- id: saves_string
+  msg: Saves
+- id: syncing_string
+  msg: Syncing
+- id: sync_sel_line_string
+  msg: Sync selected line
+- id: replay_sel_line_string
+  msg: Replay selected line
+- id: resync_100_back_string
+  msg: Re-sync selected line for 100ms backwards
+- id: resync_100_frw_string
+  msg: Re-sync selected line for 100ms forwards
+- id: import_from_string
+  msg: Import lyrics from…
+- id: export_to_string
+  msg: Export lyrics to…
+- id: lines_actions_string
+  msg: Lines actions
+- id: add_new_line_string
+  msg: Add a new line
+- id: sort_string
+  msg: Sort
+- id: a_z_string
+  msg: A-Z
+- id: z_a_string
+  msg: Z-A
+- id: quick_edit_string
+  msg: Quick Edit
+- id: preferences_string
+  msg: Preferences
+- id: keybindings_string
+  msg: Keybindings
+- id: about_app_string
+  msg: About App
+- id: clipboard_string
+  msg: Clipboard
+- id: file_string
+  msg: File
+- id: remove_line_string
+  msg: Remove line
+- id: prepend_line_string
+  msg: Prepend line to selected
+- id: append_line_sel_string
+  msg: Append line to selected
+- id: append_line_end_string
+  msg: Append line to end
+- id: open_dir_string
+  msg: Open Direcotry
+- id: open_file_string
+  msg: Open File
+- id: sync_string
+  msg: Sync
+- id: edit_metadata_string
+  msg: Edit song metadata
+- id: show_song_info_string
+  msg: Show song info
+- id: open_syncing_page_string
+  msg: Open syncing page
+- id: basic_string
+  msg: Basic
+- id: quit_string
+  msg: Quit
+- id: select_dir_string
+  msg: Select directory
+- id: open_preferencs_string
+  msg: Open Preferences
+- id: open_keybindings_string
+  msg: Open Keybindings
+- id: sync_page_string
+  msg: Sync page
+- id: sync_resync_line_string
+  msg: Sync/Re-sync line
+- id: behavior_string
+  msg: Behavior
+- id: reset_quick_edit_switch_title
+  msg: Reset quick edit dialog on close
+- id: reset_quick_edit_switch_desc
+  msg: Should the Quick Edit dialog be resetted on close or not
+- id: save_session_switch_title
+  msg: Save session on app close
+- id: save_session_switch_desc
+  msg: Opening last directory on next app startup
+- id: auto_file_manipulation_switch_title
+  msg: Automatic file manipulation
+- id: auto_file_manipulation_switch_desc
+  msg: Automatically creates and updates files on lyrics change
+- id: file_format_selector_title
+  msg: File format
+- id: file_format_selector_desc
+  msg: File format for auto manipulation
+- id: chronograph_desc_string
+  msg: Sync lyrics of your loved songs ♪
+- id: main_page_string
+  msg: Main page
+- id: lrclib_import_string
+  msg: LRClib import
+- id: small_sync_page_string
+  msg: Small sync page

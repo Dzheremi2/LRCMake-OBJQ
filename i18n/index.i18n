@@ -1,0 +1,18 @@
+method: {
+  primary: resourceful
+  secondary: null
+}
+
+langs: [ru, ua, fr, de, zh, no, is, cz, sl]
+
+source: local:/i18n/source.i18n
+
+translators: {
+  ru: [
+    translator: {
+      name: Dzheremi
+      email: dzheremi@derivesmail.dev
+      website: https://derives.dev/Dzheremi
+    }
+  ]
+}

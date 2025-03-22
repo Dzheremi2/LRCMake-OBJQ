@@ -20,12 +20,12 @@
         },
         {
             "name": "keyword.control.objq",
-            "match": "\\b(define|import|from|export|override|extend)\\b",
+            "match": "\\b(define|import|from|export|override|extend|erase)\\b",
             "fontStyle": "italic"
         },
         {
             "name": "keyword.other.objq",
-            "match": "\\b(:append|for|while|in|return|:replace)\\b"
+            "match": "\\b(for|while|in|when|return)\\b"
         },
         {
             "name": "support.function.magic.python",

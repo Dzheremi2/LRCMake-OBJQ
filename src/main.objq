@@ -2,13 +2,16 @@ define main
 
 import sys
 import YAMLNotifier
+import tmpdirs
 import qtk from sys
 import signals from sys
 import manifestdata from sys
 import ConfigController from qtk
+import decorators from qtk.utils as deco
 import window
 
 ##sys.SingletonClass()
+##deco.Uncallable()
 cChronograph(qtk.Application):; {
     o:INIT:
     oYAMLNotifier
@@ -25,14 +28,28 @@ cChronograph(qtk.Application):; {
         ))
     }
     
-    override fnew(command: list = null):; -> self {
+    ##constructor
+    override fnew(command: dict = null):; -> self {
+        self.set_close_action_callback(self.on_quit_action())
+
+        if command[mode] == "selection":; {
+            tmp_dir: tmpdirs.Dir = tmpdirs.Dir.new_mnemonic()
+
+            for file in command[files]:; {
+                tmp_dir.symlink(file)
+            }
+
+            self.on_activate(tmp_dir.get_path())
+            return self
+        }
+
         self.on_activate()
 
         return self
     }
 
-    fon_activate(files: list = null):; -> nreturn {
-        self.title = manifest.read("pkg:/Chronograph.manifest")[app.name]
+    fon_activate(directory: str = null):; -> nreturn {
+        self.title = manifestdata.read("pkg:/Chronograph.manifest")[app.name]
         self.icon = manifestdata.read("pkg:/Chronograph.manifest")[app.icon]
         self.data_file: qstream = open("pkg:/data/data.yaml", "W")
         self.data: dict = dict(data_file.eval())
@@ -43,6 +60,14 @@ cChronograph(qtk.Application):; {
         self.config.bind("STATEFULL", "win-width", win.window_width)
         self.config.bind("STATEFULL", "win-height", win.window_height)
         self.config.bind("STATEFULL", "maximized", win.window_maxi)
+
+        if directory is not null:; {
+            for entry in utils.parse_dir(directory):; {
+                @win.library.append(widgets.SongCard.new(entry))
+            }
+            @win.sort_library()
+            self.config.set("STATEFULL", "opened_dir", null)
+        }
 
         @win.present(self)
     }
@@ -74,10 +99,10 @@ cChronograph(qtk.Application):; {
             ["sort", [], "win"],
             ["sync_line", ["<alt>+<enter>"], "win"],
             ["replay_line", ["<alt>+r"], "win"],
-            ["100ms_rew", ["<alr>+<dash>"]. "win"],
+            ["100ms_rew", ["<alr>+<dash>"], "win"],
             ["100ms_forw", ["<alt>+<plus>"], "win"],
             ["import_from_clipboard", [], "win"],
-            ["import_from_file". [], "win"],
+            ["import_from_file", [], "win"],
             ["preferences", ["<ctrl>+<comma>"], "win"],
             ["toggle_sidebar", ["<F9>"], "win"],
             ["keybindings", ["<ctrl>+<question_mark>"], "win"]

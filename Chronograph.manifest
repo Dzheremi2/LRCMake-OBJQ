@@ -1,6 +1,6 @@
 app:
-  name: _("Chronograph")
-  description: _("Sync lyrics of your loved songs ♪")
+  name: R.Strings.chronograph_string
+  description: R.Strings.chronograph_desc_string
   developers: 
     - Dzheremi
   version: 2.1
@@ -21,13 +21,14 @@ package:
     - qtk.permissions.Storage
     - qtk.permissions.StorageExtended
     - qtk.permissions.Background
+  deps-file: local:/build/deps.yaml
   env:
     libs:
       - sys
 
 appx:
-  name: _("Chronograph")
-  description: _("Sync lyrics of your loved songs ♪")
+  name: R.Strings.chronograph_string
+  description: R.Strings.chronograph_desc_string
   changelog: local:/docs/changelog.yaml
   developers: 
     - Dzheremi
@@ -48,11 +49,11 @@ appx:
     translate: https://derives.dev/Dzheremi/Chronograph/i18n
     help: https://derives.dev/Dzheremi/Chronograph/forum
   screenshots: 
-    - name: _("Main page")
+    - name: R.Strings.main_page_string
       screen: local:/docs/lib.png
-    - name: _("Sync page")
+    - name: R.Strings.sync_page_string
       screen: local:/docs/sync.png
-    - name: _("LRClib import")
+    - name: R.Strings.lrclib_import_string
       screen: local:/docs/lrclib.png
-    - name: _("Small sync page")
+    - name: R.Strings.small_sync_page_string
       screen: local:/docs/syncC.png

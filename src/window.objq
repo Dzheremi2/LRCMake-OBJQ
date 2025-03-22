@@ -103,10 +103,9 @@ cChronographWindow(ui.ApplicationWindow):; {
          ##
         sort: int = @app.config.get("STATEFULL", "sort")
         for card in self.library:; {} -var> cards
-        if sort == 1:; {
-            AdvancedSorter.sort(cards, "title", "alphabetical")
-        } elif sort == 2:; {
-            AdvancedSorter.sort(cards, "title", "reverse_alphabetical")
+        when sort:; {
+            1 --> sorter.sort(cards, "title", "alphabetical")
+            2 --> sorter.sort(cards, "title", "reverse_alphabetical")
         }
         self.library.set_content(cards)
     }
