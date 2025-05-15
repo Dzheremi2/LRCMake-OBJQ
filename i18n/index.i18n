@@ -9,10 +9,10 @@ source: local:/i18n/source.i18n
 
 translators: {
   ru: [
-    translator: {
+    {
       name: Dzheremi
       email: dzheremi@derivesmail.dev
-      website: https://derives.dev/Dzheremi
+      website: https://derives.dev/dzheremi
     }
   ]
 }

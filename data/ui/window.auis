@@ -1,14 +1,8 @@
-import {
-    sys.math.nums -> inf
-}
-
 define {
-    qtk.interface -> ui
-    ui.icons -> ico
-    qtk.resources -> R
+  ui.icons -> ico
 }
 
-TEMPLATE:window <- ui.ApplicationWindow:
+TEMPLATE:ChronographWindow <- ui.ApplicationWindow:
   ! actions: ["min", "max", "close"]
   ! resizeable: true
   ! min-width: 360
@@ -29,44 +23,45 @@ TEMPLATE:window <- ui.ApplicationWindow:
           ui.buttons.Button:
             ! id: "toggle_sidebar_button"
             ! icon: ico.SIDEBAR_LEFT
-            ! tooltip: R.Strings.toggle_sidebar_string
+            ! tooltip: R.Strings.toggle_sidebar_button_tooltip
             ! visible: true
+            $ clicked: toggle_sidebar_button_clicked
           ui.buttons.MenuButton:
             ! icon: ico.OPEN_DIR
-            ! tooltip: R.Strings.select_source_string
+            ! tooltip: R.Strings.open_dir_button_tooltip
             ! menu: source_menu
           ui.buttons.ToggleButton:
             ! id: "toggle_search_button"
             ! icon: ico.SEARCH_LOUPE
-            ! tooltip: R.Strings.toggle_search_string
+            ! tooltip: R.Strings.toggle_search_button_tooltip
             ! toggled: false
             ! visible: false
 
           [center]
           ui.headers.TitleWidget:
-            ! text: R.Strings.chronograph_string
-
+            ! text: R.Strings.app_name
+          
           [end]
           ui.buttons.Button:
             ! id: "reparse_dir_button"
             ! icon: ico.RELOAD_CIRCLE_2_ARROWS
-            ! tooltip: R.Strings.reparse_dir_string
+            ! tooltip: R.Strings.reparse_dir_button_tooltip
           ui.buttons.Button:
             ! id: "pin_directory_button"
             ! icon: ico.PIN
-            ! tooltip: R.Strings.save_dir_string
+            ! tooltip: R.Strings.pin_directory_button_tooltip
           ui.buttons.MenuButton:
             ! id: "app_menu_button"
             ! icon: ico.APP_MENU
-            ! tooltip: R.Strings.main_app_menu_string
+            ! tooltip: R.Strings.app_menu_button_tooltip
             ! menu: app_menu
 
         ui.headers.SearchBar:
           ! id: "search_bar"
           ! max-width: 500
-          ! placeholder-text: R.Strings.search_string
+          ! placeholder-text: R.Strings.search_bar_placeholder
           ! collapsed: bind toggle_search_button.toggled bidirectional
-        
+
         ui.containers.ScrolledWindow:
           ! scrolling-direction: VERTICAL
 
@@ -78,244 +73,14 @@ TEMPLATE:window <- ui.ApplicationWindow:
             ! scrolling-direction: VERTICAL
             ! column-spacing: 12
             ! row-spacing: 12
-            ! margin-all: 12
-
-ui.navigation.NavigationPage:
-  ! id: "sidebar"
-
-  Column:
-    ui.headers.HeaderBar:
-      [start]
-      ui.buttons.Button:
-        ! id: "toggle_sidebar_button_sidebar"
-        ! icon: ico.SIDEBAR_LEFT
-        ! tooltip: R.Strings.toggle_sidebar_string
-        ! visible: bind toggle_sidebar_button.visible inverted
-
-      [center]
-      ui.headers.TitleWidget:
-        ! text: R.Strings.saves_string
-
-    ui.containers.ScrolledWindow:
-      ! scrolling-direction: VERTICAL
-
-      ui.containers.ListBox:
-        ! id: "saves"
-        ! selection-mode: SINGLE
-        ! style-classes: ["sidebar_list_box"]
-
-ui.navigation.NavigationPage:
-  ! id: "sync_nav_page"
-
-  Column:
-    ui.headers.HeaderBar:
-      [start]
-      ui.buttons.Button:
-        ! id: "back_button"
-        ! icon: ico.ARROW_LEFT_SHORT
-        ! action: $ sbid("navigation").set_navigation(sbid("navigation").content) $
-      
-      [center]
-      ui.headers.TitleWidget:
-        ! text: R.Strings.syncing_string
-
-      [end]
-      ui.buttons.MenuButton: bind app_menu_button
-
-    ui.containers.Constraint:
-      ! max-width: 600
-
-      Column:
-        Row:
-          ! spacing: 6
-          ! styles: [
-            render-background: true
-          ]
-
-          ui.images.Image:
-            ! id: "cover_sync"
-            ! width: 160
-            ! height: 160
-            ! styles: [
-              border-radius: 16
-            ]
-          
-          Column:
-            ui.texts.Label:
-              ! id: "title_sync"
-            ui.texts.Label:
-              ! id: "artist_sync"
-            ui.media.AudioControls:
-              ! id: "controls"
-              ! enable-repeat-button: true
-
-        Row:
-          ! spacing: 6
-          ! halign: CENTER
-          ! margin-bottom: 4
-
-          ui.buttons.Button:
-            ! id: "sync_button"
-            ! icon: ico.STOPWATCH_LAP
-            ! tooltip: R.Strings.sync_sel_line_string
-            ! styles: [
-              border-radius: inf,
-              background-color: qtk.colors.UserColors.PRIMARY_ACTION,
-              icon-color: qtk.colors.UserColors.REVERSE_PRIMARY_ACTION
-            ]
-
-          ui.buttons.Button:
-            ! id: "replay_button"
-            ! icon: ico.REPLAY
-            ! tooltip: R.Strings.replay_sel_line_string
-            ! styles: [
-              border-radius: inf
-            ]
-
-          ui.buttons.Button:
-            ! id: "sync_back_button"
-            ! icon: ico.PLAY_TRACK_BACKWARD
-            ! tooltip: R.Strings.resync_100_back_string
-            ! styles: [
-              border-radius: inf
-            ]
-
-          ui.buttons.Button:
-            ! id: "sync_forw_button"
-            ! icon: ico.PLAY_TRACK_FORWARD
-            ! tooltip: R.Strings.resync_100_frw_string
-            ! styles: [
-              border-radius: inf
-            ]
-
-          ui.buttons.MenuButton:
-            ! icon: ico.DOWNLOAD_PLATE
-            ! tooltip: R.Strings.import_from_string
-            ! menu: import_menu
-            ! styles: [
-              border-radius: inf,
-              background-color: qtk.colors.UserColors.ON_CONTENT_TRASPARENT,
-              icon-color: qtk.colors.UserColors.REVERSE_ON_CONTENT_TRASPARENT
-            ]
-
-          ui.buttons.MenuButton:
-            ! icon: ico.UPLOAD_PLATE
-            ! tooltip: R.Strings.export_to_string
-            ! menu: export_menu
-            ! styles: [
-              border-radius: inf,
-              background-color: qtk.colors.UserColors.ON_CONTENT_TRASPARENT,
-              icon-color: qtk.colors.UserColors.REVERSE_ON_CONTENT_TRASPARENT
-            ]
-
-          Row:
-          
-          ui.buttons.MenuButton:
-            ! icon: ico.LETTER_A_CAPITALIZED
-            ! tooltip: R.Strings.lines_actions_string
-            ! menu: lines_menu
-            ! styles: [
-              border-radius: inf,
-              background-color: qtk.colors.UserColors.ON_CONTENT_TRASPARENT,
-              icon-color: qtk.colors.UserColors.REVERSE_ON_CONTENT_TRASPARENT
-            ]
-
-          ui.buttons.Button:
-            ! id: "file_info_button"
-            ! icon: ico.INFO_CIRCLED
-            ! styles: [
-              border-radius: inf
-            ]
-
-        ui.containers.ScrolledWindow:
-          ! scrolling-direction: VERTICAL
-
-          ui.containers.ListBox:
-            ! id: "lines_box"
-            ! selection-mode: SINGLE
-
-        Row:
-          ui.buttons.Button:
-            ! id: "add_line_button"
-            ! icon: ico.MATH_PLUS
-            ! tooltip: R.Strings.add_new_line_string
-
-menu:
-  ! id: "app_menu"
-  section:
-    submenu:
-      ! name: R.Strings.sort_string
-      item:
-        ! name: R.Strings.a_z_string
-        ! action: "win.sort"
-        ! arg: 1
-      item:
-        ! name: R.Strings.z_a_string
-        ! action: "win.sort"
-        ! arg: 2
-  section:
-    item:
-      ! name: R.Strings.quick_edit_string
-      ! action: "win.open_quick_edit"
-  section:
-    item:
-      ! name: R.Strings.preferences_string
-      ! action: "win.preferences"
-    item:
-      ! name: R.Strings.keybindings_string
-      ! action: "win.keybindings"
-    item:
-      ! name: R.Strings.about_app_string
-      ! action: "app.about"
-
-menu:
-  ! id: "import_menu"
-  section:
-    item:
-      ! name: R.Strings.clipboard_string
-      ! action: "win.import_from_clipboard"
-    item:
-      ! name: R.Strings.file_string
-      ! action: "win.import_from_file"
-    item:
-      ! name: "LRClib"
-      ! action: "win.import_from_lrclib"
-
-menu:
-  ! id: "export_menu"
-  section:
-    item:
-      ! name: R.Strings.clipboard_string
-      ! action: "win.export_to_clipboard"
-    item:
-      ! name: R.Strings.file_string
-      ! action: "win.export_to_file"
-    item:
-      ! name: "LRClib"
-      ! action: "win.export_to_lrclib"
-
-menu:
-  ! id: "lines_menu"
-  section:
-    item:
-      ! name: R.Strings.remove_line_string
-      ! action: "win.remove_line"
-    item:
-      ! name: R.Strings.prepend_line_string
-      ! action: "win.prepend_line"
-    item:
-      ! name: R.Strings.append_line_sel_string
-      ! action: "win.append_line"
-    item: 
-      ! name: R.Strings.append_line_end_string
-      ! action: "win.append_line_end"
+            ! margin: 12
 
 menu:
   ! id: "source_menu"
   section:
     item:
-      ! name: R.Strings.open_dir_string
+      ! name: R.Strings.directory
       ! action: "win.open_dir"
     item:
-      ! name: R.Strings.open_file_string
-      ! action: "win.open_file"
+      ! name: R.Strings.files
+      ! action: "win.open_files"

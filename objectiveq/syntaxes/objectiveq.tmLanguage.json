@@ -20,7 +20,7 @@
         },
         {
             "name": "keyword.control.objq",
-            "match": "\\b(define|import|from|export|override|extend|erase)\\b",
+            "match": "\\b(define|import|from|export|override|extend|erase|with|as)\\b",
             "fontStyle": "italic"
         },
         {

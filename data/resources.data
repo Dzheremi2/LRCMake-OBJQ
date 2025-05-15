@@ -1,4 +1,10 @@
 resPrefix:
+  - name: Layouts
+    resources:
+      - name: ChronographWindow
+        res: local:/data/ui/window.auis
+        preprocess:
+          use: qtk.layouts.auis.compile
   - name: Strings
     resources:
       - name: i18n_index
@@ -6,31 +12,3 @@ resPrefix:
         preprocess:
           use: qtk.i18n.generate
           args: "--output=locales.i18n -merge-single-file"
-  - name: Icons
-    resources:
-      - name: app_icon
-        res: local:/data/icons/chronograph.svg
-      - name: note_placeholder
-        res: local:/data/icons/note-placeholder.svg
-  - name: Layouts
-    resources:
-      - name: window
-        res: local:/data/ui/window.auis
-        preprocess:
-          use: qtk.layouts.experimental.auis.compile
-          args: "--exp-mode=machine --in-mode=auis"
-      - name: SongCard
-        res: local:/data/ui/widgets/SongCard.auis
-        preprocess:
-          use: qtk.layouts.experimental.auis.compile
-          args: "--exp-mode=machine --in-mode=auis"
-      - name: Preferences
-        res: local:/data/ui/widgets/preferences.auis
-        preprocess:
-          use: qtk.layouts.experimental.auis.compile
-          args: "--exp-mode=machine --in-mode=auis"
-      - name: Keybindings
-        res: local:/data/ui/widgets/keybindings.auis
-        preprocess:
-          use: qtk.layouts.experimental.auis.compile
-          args: "--exp-mode=machine --in-mode=auis"

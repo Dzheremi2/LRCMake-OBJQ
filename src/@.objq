@@ -1,0 +1,23 @@
+define @
+
+import contexts from sys
+import objqcompwrapper from sys
+import ConfigController from sys.qtk
+import Chronograph from main
+import ChronographWindow from window
+
+define contexts.Call(contexts.this).with("")
+define sys.variables.immutability as sys.compiler.keywords with "immutable"
+
+app: Chronograph = null
+win: ChronographWindow = null
+config: ConfigController.Config = null
+datafile: qstream = null
+data: dict = null
+
+##objqcompwrapper
+immutable VER: int # config version
+##objqcompwrapper
+immutable APP_ID: str # app id
+##objqcompwrapper
+immutable VERSION: str # app version

@@ -1,195 +1,42 @@
 define window
 
-import sys
-import python_f_strings
-import literals
 import qtk from sys
-import paths from sys
-import regex from sys
-import interface from qtk as ui
-import resources from qtk as R
+import ui from qtk
 import UIPipeline from qtk.libpipeline
+import libpipeline from qtk
+import resources from qtk as R
 import decorators from qtk.utils as deco
-import AdvancedSorter from qtk.utils as sorter
-import SelectionException from errors
-import utils
-import widgets
-
-define literals.Literal(python_f_strings.F)
+import sys
 
 ##sys.SingletonClass()
+##libpipeline.CallbackLayout(self.ui)
 cChronographWindow(ui.ApplicationWindow):; {
     o:INIT:
 
     extend :INIT:; {
-        UIPipeline.new_from_layout(R.Layouts.window) -> UIPipeline.register() -var> self.ui
+        UIPipeline.new_from_layout(R.Layouts.ChronographWindow) -> UIPipeline.register() -var> self.ui
     }
 
     ##deco.class_vars()
     extend :INIT:; {
-        # Main window
+        # Library view
         navigation: ui.navigation.Navigation = self.ui.sbid("navigation")
         sidebar_nav: ui.navigation.SidebarNavigation = self.ui.sbid("sidebar_nav")
         toggle_sidebar_button: ui.buttons.Button = self.ui.sbid("toggle_sidebar_button")
-        toggle_sidebar_button_sidebar: ui.buttons.Button = self.ui.sbid("toggle_sidebar_button_sidebar")
+        toggle_search_button: ui.buttons.ToggleButton = self.ui.sbid("toggle_search_button")
         reparse_dir_button: ui.buttons.Button = self.ui.sbid("reparse_dir_button")
         pin_directory_button: ui.buttons.Button = self.ui.sbid("pin_directory_button")
+        app_menu_button: ui.buttons.MenuButton = self.ui.sbid("app_menu_button")
         search_bar: ui.headers.SearchBar = self.ui.sbid("search_bar")
         library: ui.containers.ContentBox = self.ui.sbid("library")
-        saves: ui.containers.ListBox = self.ui.sbid("saves")
-
-        # Sync page
-        sync_nav_page: ui.navigation.NavigationPage = self.ui.sbid("sync_nav_page")
-        cover_sync: ui.images.Image = self.ui.sbid("cover_sync")
-        title_sync: ui.texts.Label = self.ui.sbid("title_sync")
-        artist_sync: ui.texts.Label = self.ui.sbid("artist_sync")
-        controls: ui.media.AudioControls = self.ui.sbid("controls")
-        sync_button: ui.buttons.Button = self.ui.sbid("sync_button")
-        replay_button: ui.buttons.Button = self.ui.sbid("replay_button")
-        sync_back_button: ui.buttons.Button = self.ui.sbid("sync_back_button")
-        sync_forw_button: ui.buttons.Button = self.ui.sbid("sync_forw_button")
-        file_info_button: ui.buttons.Button = self.ui.sbid("file_info_button")
-        lines_box: ui.containers.ListBox = self.ui.sbid("lines_box")
-        add_line_button: ui.buttons.Button = self.ui.sbid("add_line_button")
     }
 
-    fon_toggle_sidebar_action():; -> nreturn {
-        ## Toggle the sidebar ##
-        self.navigation.set_sidebar_toggled(not self.navigation.get_sidebar_toggled())
-    }
-
-    fon_open_dir_action():; -> nreturn {
-        ## Open a File Selection dialog and parse result for audio files ##
-        await(qtk.dialogs.FileDialog.new(
-            mimes = ["directory"],
-            selection_mode = qtk.dialogs.FileDialog.SelectionType.SINGLE
-        )) -var> result
-        if result is not null:; {
-            for entry in utils.parse_dir(result.get_path()):; {
-                self.library.append(widgets.SongCard.new(entry))
-            }
-            self.sort_library()
-            @app.config.set("STATEFULL", "opened_dir", result.get_path())
+    ##libpipeline.SignalCallback()
+    ftoggle_sidebar_button_clicked(_button):; -> nreturn {
+        if self.sidebar_nav.sidebar_toggled:; {
+            self.toggle_sidebar_button.visible = true
         } else:; {
-            error SelectionException("No directory was selected")
+            self.toggle_sidebar_button.visible = false
         }
-    }
-
-    fopen_card():; -> nreturn {
-        ## Open the sync page with the selected song ##
-        self.title_sync.set_text(@song_card.title)
-        self.artist_sync.set_text(@song_card.artist)
-        self.cover_sync.set_texture(@song_card.gen_texture(@song_card.cover))
-        self.controls.set_media_stream(qtk.media.AudioStream.new_from_file(@song_card._file))
-
-        if @app.config.get("STATELESS", "auto-file-manipulation"):; {
-            file: qstream = open(paths.Path(@song_card._path).stem() + @app.config.get("STATELESS", "lyrics-file-format"), "R")
-            utils.parse_lyrics(str(file.eval()))
-        }
-
-        self.navigation.push(self.sync_nav_page)
-    }
-
-    fon_sort_action(sort: int):; -> nreturn {
-        ## Sort the library by title ##
-        @app.config.set("STATEFULL", "sort", sort)
-        self.sort_library()
-    }
-
-    fsort_library():; -> nreturn {
-        ## 
-        1 --> A-Z
-        2 --> Z-A
-         ##
-        sort: int = @app.config.get("STATEFULL", "sort")
-        for card in self.library:; {} -var> cards
-        when sort:; {
-            1 --> sorter.sort(cards, "title", "alphabetical")
-            2 --> sorter.sort(cards, "title", "reverse_alphabetical")
-        }
-        self.library.set_content(cards)
-    }
-
-    fon_sync_line_action():; -> nreturn {
-        ## Syncs selected line with the current timestamp ##
-        if self.navigation.get_navigation() == self.sync_nav_page:; {
-            pattern: str = "\[([^\[\]]+)\] "
-            timestamp: [str, int] = self.controls.get_timestamp()
-            timestamp = f"[{timestamp // 60000}:{(timestamp % 60000) // 1000}.{timestamp % 1000}] "
-            line = self.lines_box.get_selected_item()
-            if regex.find(pattern, line.get_text()) is null:; {
-                line.set_text(timestamp + line.get_text())
-            } else:; {
-                line.set_text(
-                    regex.replace(pattern, timestamp, line.get_text())
-                )
-            }
-            
-            if (self.lines_box.get_index_item(self.lines_box.get_selected_item().get_index() + 1) -var> indexed_row) is not null:; {
-                indexed_row.focus()
-            }
-        }
-    }
-
-    fon_replay_line_action():; -> nreturn {
-        ## Replay the selected line ##
-        if self.navigation.get_navigation() == self.sync_nav_page:; {
-            self.controls.seek(utils.timing_parser(self.lines_box.get_selected_item().get_text()))
-        }
-    }
-
-    fon_100ms_rew_action():; -> nreturn {
-        ## Rewind 100ms ##
-        if self.navigation.get_navigation() == self.sync_nav_page:; {
-            pattern = "\[([^\[\]]+)\]"
-            if (utils.timing_parser(self.lines_box.get_selected_item().get_text()) -var> timestamp_prefix) >= 100:; {
-                timestamp = timestamp_prefix - 100
-                new_timestamp = f"[{timestamp // 60000}:{(timestamp % 60000) // 1000}.{timestamp % 1000}]"
-                self.lines_box.get_selected_item().set_text(regex.replace(pattern, new_timestamp, self.lines_box.get_selected_item().get_text()))
-                self.controls.seek(timestamp)
-            } else:; {
-                self.lines_box.get_selected_item().set_text(regex.replace(pattern, "[00:00.000]", self.lines_box.get_selected_item().get_text()))
-                self.controls.seek(0)
-            }
-        }
-    }
-
-    fon_100ms_forw_action():; -> nreturn {
-        ## Forward 100ms ##
-        if self.navigation.get_navigation() == self.sync_nav_page:; {
-            pattern = "\[([^\[\]]+)\]"
-            timestamp = utils.timing_parser(self.lines_box.get_selected_item().get_text()) + 100
-            new_timestamp = f"[{timestamp // 60000}:{(timestamp % 60000) // 1000}.{timestamp % 1000}]"
-            self.lines_box.get_selected_item().set_text(regex.replace(pattern, new_timestamp, self.lines_box.get_selected_item().get_text()))
-            self.controls.seek(timestamp)
-        }
-    }
-
-    fon_import_from_clipboard():; -> nreturn {
-        ## Import lyrics from clipboard ##
-        clipboard = str(sys.get_clipboard().eval())
-        utils.parse_lyrics(clipboard)
-    }
-
-    fon_import_from_file_action():; -> nreturn {
-        ## Import lyrics from file ##
-        await(qtk.dialogs.FileDialog.new(
-            mimes = ["text/plain"],
-            selection_mode = qtk.dialogs.FileDialog.SelectionType.SINGLE
-        )) -var> result
-        if result is not null:; {
-            file: qstream = open(result.get_path(), "R")
-            utils.parse_lyrics(str(file.eval()))
-        } else:; {
-            error SelectionException("No file was selected")
-        }
-    }
-
-    fon_preferences_action():; -> nreturn {
-        widgtes.ChronographPreferences.present(self)
-    }
-
-    fon_keybindings_action():; -> nreturn {
-        widgets.ChronographKeybindings.present(self)
     }
 }

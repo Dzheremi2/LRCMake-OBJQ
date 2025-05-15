@@ -1,59 +1,31 @@
-app:
-  name: R.Strings.chronograph_string
-  description: R.Strings.chronograph_desc_string
-  developers: 
-    - Dzheremi
-  version: 2.1
-  icon: R.Icons.app_icon
-  is-terminal: false
-  platform:
-    pc: true
-    mobile: true
-    pointer: true
-
-package:
-  pkg_name: chronograph
-  pkg_id: dev.derives.Dzheremi.Chronograph
+package: # system related data
+  id: dev.derives.dzheremi.Chronograph
   exec: pkg:/chronograph
-  required-access-level: user
+  access-level: user
+  version:
+    normal: 1.0
+    int: 1
   permissions:
     - qtk.permissions.Internet
     - qtk.permissions.Storage
     - qtk.permissions.StorageExtended
     - qtk.permissions.Background
-  deps-file: local:/build/deps.yaml
-  env:
-    libs:
-      - sys
 
-appx:
-  name: R.Strings.chronograph_string
-  description: R.Strings.chronograph_desc_string
-  changelog: local:/docs/changelog.yaml
-  developers: 
+app: # user-side related data
+  name: R.Strings.app_name
+  desc: R.Strings.app_desc
+  icon: R.Icons.Chronograph
+  changelog: pkg:/docs/changelog.yaml
+  developers:
     - Dzheremi
   platform:
     pc: true
     mobile: true
     pointer: true
-  policies:
-    allow-comments: true
-    allow-rating: true
-    oars: oars-1.1
-    license: QOS-SOFT-FOSS-2.1
   links:
-    source-code: https://derives.dev/Dzheremi/Chronograph
-    homepage: https://derives.dev/Dzheremi/Chronograph
-    issue-tracker: https://derives.dev/Dzheremi/Chronograph/issues
-    contributing: https://derives.dev/Dzheremi/Chronograph/mergerq
-    translate: https://derives.dev/Dzheremi/Chronograph/i18n
-    help: https://derives.dev/Dzheremi/Chronograph/forum
-  screenshots: 
-    - name: R.Strings.main_page_string
-      screen: local:/docs/lib.png
-    - name: R.Strings.sync_page_string
-      screen: local:/docs/sync.png
-    - name: R.Strings.lrclib_import_string
-      screen: local:/docs/lrclib.png
-    - name: R.Strings.small_sync_page_string
-      screen: local:/docs/syncC.png
+    source-code: https://derives.dev/dzheremi/Chronograph
+    homepage: https://derives.dev/dzheremi/Chronograph
+    issue-tracker: https://derives.dev/dzheremi/Chronograph/issues
+    contributing: https://derives.dev/dzheremi/Chronograph/mergerq
+    i18n: https://derives.dev/dzheremi/Chronograph/i18n
+    help: https://derives.dev/dzheremi/Chronograph/forum
